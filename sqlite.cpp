@@ -1,7 +1,20 @@
-#include "sqlite.h"
 #include "core/core_bind.h"
 #include "core/os/os.h"
 #include "editor/project_settings_editor.h"
+#include "sqlite.h"
+
+#include "sqlite3.h"
+
+#define _GNU_SOURCE
+
+extern "C" {
+  void init_mvsqlite(void);
+  void init_mvsqlite_connection(sqlite3 *db);
+} 
+
+void mvsqlite_bootstrap(void) {
+  init_mvsqlite();
+}
 
 Array fast_parse_row(sqlite3_stmt *stmt) {
   Array result;
@@ -211,13 +224,28 @@ bool SQLite::open(String path) {
     return open_buffered(path, buffer, size);
   }
 
+  if (path.begins_with("mv://")) {
+    String real_path = path.lstrip("mv://");
+    print_line(real_path);
+    int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+    if (result != SQLITE_OK) {
+      print_error("Cannot open database!");
+      sqlite3_close_v2(db);
+      db = nullptr;
+      return false;
+    }
+    init_mvsqlite_connection(db);
+    return true;
+  }
+
   String real_path =
       ProjectSettings::get_singleton()->globalize_path(path.strip_edges());
 
-  int result = sqlite3_open(real_path.utf8().get_data(), &db);
+  int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 
   if (result != SQLITE_OK) {
     print_error("Cannot open database!");
+    sqlite3_close_v2(db);
     return false;
   }
 
@@ -225,7 +253,7 @@ bool SQLite::open(String path) {
 }
 
 bool SQLite::open_in_memory() {
-  int result = sqlite3_open(":memory:", &db);
+  int result = sqlite3_open_v2(":memory:", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
   ERR_FAIL_COND_V_MSG(result != SQLITE_OK, false,
                       "Cannot open database in memory, error:" + itos(result));
   return true;

@@ -24,7 +24,7 @@ func _ready():
 	query = "SELECT * FROM users;";
 	result = db.fetch_array(query);
 
-	if (!result || result.size() <= 0):
+	if (result == null || result.size() <= 0):
 		# Insert new row
 		query = "INSERT INTO users (first_name, last_name, email) VALUES ('godot', 'engine', 'user@users.org');";
 		result = db.query(query);

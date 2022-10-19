@@ -6,8 +6,39 @@
 #include "core/templates/local_vector.h"
 
 // SQLite3
-#include "thirdparty/sqlite/spmemvfs.h"
+#include "thirdparty/spmemvfs/spmemvfs.h"
 #include "thirdparty/sqlite/sqlite3.h"
+
+#include "sqlite3.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <pthread.h>
+#include <assert.h>
+
+void mvsqlite_bootstrap(void);
+
+typedef int (*sqlite3_initialize_fn)(void);
+typedef int (*sqlite3_open_v2_fn)(
+    const char *filename,   /* Database filename (UTF-8) */
+    sqlite3 **ppDb,            /* OUT: SQLite db handle */
+    int flags,              /* Flags */
+    const char *zVfs        /* Name of VFS module to use */
+);
+typedef int (*sqlite3_step_fn)(sqlite3_stmt *pStmt);
+
+int sqlite3_step(sqlite3_stmt *pStmt);
+
+int sqlite3_open_v2(
+    const char *filename,   /* Database filename (UTF-8) */
+    sqlite3 **ppDb,            /* OUT: SQLite db handle */
+    int flags,              /* Flags */
+    const char *zVfs        /* Name of VFS module to use */
+);
+
+int sqlite3_open(
+    const char *filename,   /* Database filename (UTF-8) */
+    sqlite3 **ppDb          /* OUT: SQLite db handle */
+);
 
 class SQLite;
 

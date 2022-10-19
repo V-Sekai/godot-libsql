@@ -15,7 +15,7 @@ func _ready() -> void:
 
 	# Get item list from db
 	var pots = db.fetch_array("SELECT * FROM potion ORDER BY id ASC");
-	if (not pots or pots.empty()):
+	if (pots == null or pots.is_empty()):
 		return;
 
 	for pot in pots:
@@ -37,8 +37,8 @@ func _ready() -> void:
 func open_database(db : SQLite, path : String) -> bool:
 	if (path.begins_with("res://")):
 		# Open packed database
-		var file = File.new();
-		if (file.open(path, file.READ) != OK):
+		var file = FileAccess.open(path, FileAccess.READ);
+		if file == null:
 			return false;
 		var size = file.get_length();
 		var buffers = file.get_buffer(size);
