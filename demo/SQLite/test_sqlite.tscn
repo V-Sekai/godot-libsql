@@ -8,17 +8,21 @@
 
 [node name="Node" type="Node"]
 
-[node name="ItemDatabase" type="Node" parent="."]
+[node name="ItemDatabase" type="Node2D" parent="."]
+visible = false
 script = ExtResource("1")
 
-[node name="SqlQueries" type="Node" parent="."]
+[node name="SqlQueries" type="Node2D" parent="."]
+visible = false
 script = ExtResource("2")
 
-[node name="GameHighScore" type="Node" parent="."]
+[node name="GameHighScore" type="Node2D" parent="."]
+visible = false
 script = ExtResource("3")
 
-[node name="BLOBData" type="Node" parent="."]
+[node name="BLOBData" type="Node2D" parent="."]
+visible = false
 script = ExtResource("4")
 
-[node name="TestDatabase" type="Node" parent="."]
+[node name="TestDatabase" type="Node2D" parent="."]
 script = ExtResource("5_l7232")
