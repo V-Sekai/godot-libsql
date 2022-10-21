@@ -223,10 +223,9 @@ bool SQLite::open(String path) {
     dbfile->get_buffer(buffer.ptrw(), size);
     return open_buffered(path, buffer, size);
   }
-
-  if (path.begins_with("mv://")) {
-    String real_path = path.lstrip("mv://");
-    print_line(real_path);
+  Strin mvsqlite_prefix = "mvsqlite://";
+  if (path.begins_with(mvsqlite_prefix)) {
+    String real_path = path.lstrip(mvsqlite_prefix);
     int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
     if (result != SQLITE_OK) {
       print_error("Cannot open database!");

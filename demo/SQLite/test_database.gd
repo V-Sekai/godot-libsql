@@ -11,7 +11,7 @@ func _ready() -> void:
 	OS.set_environment("MVSQLITE_DATA_PLANE", "http://localhost:7000/")
 
 	# Open item database
-	if (!db.open("mv://test")):
+	if (!db.open("mvsqlite://test")):
 		print("Failed opening database.");
 		return;
 	var query = "SELECT 

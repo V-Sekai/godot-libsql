@@ -8,6 +8,9 @@
 
 [node name="Node" type="Node"]
 
+[node name="TestDatabase" type="Node2D" parent="."]
+script = ExtResource("5_l7232")
+
 [node name="ItemDatabase" type="Node2D" parent="."]
 visible = false
 script = ExtResource("1")
@@ -23,6 +26,3 @@ script = ExtResource("3")
 [node name="BLOBData" type="Node2D" parent="."]
 visible = false
 script = ExtResource("4")
-
-[node name="TestDatabase" type="Node2D" parent="."]
-script = ExtResource("5_l7232")
