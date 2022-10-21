@@ -234,6 +234,7 @@ bool SQLite::open(String path) {
       db = nullptr;
       return false;
     }
+    mvsqlite_bootstrap();
     init_mvsqlite_connection(db);
     return true;
   }
