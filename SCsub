@@ -12,7 +12,7 @@ env_thirdparty.disable_warnings()
 env_thirdparty.add_source_files(env.modules_sources, "thirdparty/sqlite/sqlite3.c")
 env_thirdparty.add_source_files(env.modules_sources, "thirdparty/spmemvfs/*.c")
 
-env.Append(LIBPATH=['C:/Users/elee/scoop/apps/openssl-mingw/current/lib64', 'C:/Users/elee/Downloads/mvsqlite/target/release'])
+env.Append(LIBPATH=['C:/Users/elee/scoop/apps/openssl-mingw/current/lib64', 'C:/Users/elee/Documents/Chibifire/mvsqlite/target/release'])
 env.Append(LIBS=['mvsqlite', 'ssl', 'crypto', 'ws2_32', 'bcrypt', 'userenv', 'ntdll'])
 
 module_env.add_source_files(env.modules_sources, "*.cpp")
