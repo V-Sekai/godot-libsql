@@ -10,11 +10,8 @@
 extern "C" {
   void init_mvsqlite(void);
   void init_mvsqlite_connection(sqlite3 *db);
+  void mvsqlite_autocommit_backoff(sqlite3 *db);
 } 
-
-void mvsqlite_bootstrap(void) {
-  init_mvsqlite();
-}
 
 Array fast_parse_row(sqlite3_stmt *stmt) {
   Array result;
@@ -97,14 +94,17 @@ Variant SQLiteQuery::execute(const Array p_args) {
     ERR_FAIL_V_MSG(Variant(),
                    "Error during arguments set: " + get_last_error_message());
   }
-
+  int autocommit = 0;
   // Execute the query.
   Array result;
   while (true) {
+    autocommit = sqlite3_get_autocommit(db->db);
     const int res = sqlite3_step(stmt);
     if (res == SQLITE_ROW) {
       // Collect the result.
       result.append(fast_parse_row(stmt));
+    } else if (res == SQLITE_BUSY && autocommit) {
+      mvsqlite_autocommit_backoff(db->db);
     } else if (res == SQLITE_DONE) {
       // Nothing more to do.
       break;
@@ -223,17 +223,18 @@ bool SQLite::open(String path) {
     dbfile->get_buffer(buffer.ptrw(), size);
     return open_buffered(path, buffer, size);
   }
-
-  if (path.begins_with("mv://")) {
-    String real_path = path.lstrip("mv://");
-    print_line(real_path);
+  String mvsqlite_prefix = "mvsqlite://";
+  if (path.begins_with(mvsqlite_prefix)) {
+    print_line(vformat("Opening database %s.", path));
+    String real_path = path.lstrip(mvsqlite_prefix);
     int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
     if (result != SQLITE_OK) {
-      print_error("Cannot open database!");
+      print_error("Cannot open database.");
       sqlite3_close_v2(db);
       db = nullptr;
       return false;
     }
+    init_mvsqlite();
     init_mvsqlite_connection(db);
     return true;
   }
@@ -331,7 +332,7 @@ sqlite3_stmt *SQLite::prepare(const char *query) {
 
   ERR_FAIL_COND_V_MSG(dbs == nullptr, nullptr,
                       "Cannot prepare query! Database is not opened.");
-
+  
   // Prepare the statement
   sqlite3_stmt *stmt = nullptr;
   int result = sqlite3_prepare_v2(dbs, query, -1, &stmt, nullptr);

@@ -4,10 +4,6 @@
 #include "sqlite.h"
 
 void initialize_sqlite_module(ModuleInitializationLevel p_level) {
-  if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) {
-    mvsqlite_bootstrap();
-    return;
-  } 
   if (p_level != MODULE_INITIALIZATION_LEVEL_SERVERS) {
     return;
   } 
