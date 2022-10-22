@@ -57,12 +57,11 @@ ON CONFLICT(id) DO UPDATE SET
 	shard=excluded.shard,
 	code=excluded.code,
 	flags=excluded.flags,
-	past_pending=excluded.current_pending,
-	past_posted=excluded.current_posted,
-	current_pending=zeroblob(64),
-	current_posted=zeroblob(64),
-	timestamp=UNIXEPOCH()
-WHERE UNIXEPOCH() < excluded.timestamp and excluded.timestamp > timestamp;
+	past_pending=excluded.past_pending,
+	past_posted=excluded.past_posted,
+	current_pending=excluded.current_pending,
+	current_posted=excluded.current_posted,
+	timestamp=excluded.timestamp;
 """
 	result_create = db.create_query(query_create_original)
 	var query_delete = """
