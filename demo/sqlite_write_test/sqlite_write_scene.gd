@@ -84,45 +84,72 @@ func _ready():
 #
 #	DELETE FROM entity
 #	WHERE id = "910bbf73-7b4b-48bd-a3db-b9330f9acc76";"""
-	
-	var query_create_original = """
-INSERT INTO entity ("id", "user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
+#
+#	var query_create_original = """
+#INSERT INTO entity ("id", "user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
+#"current_pending", "current_posted", "timestamp")
+#VALUES ("910bbf73-7b4b-48bd-a3db-b9330f9acc76", zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), zeroblob(64), UNIXEPOCH())
+#ON CONFLICT(id) DO UPDATE SET
+#	user_data=excluded.user_data,
+#	reserved=excluded.reserved,
+#	shard=excluded.shard,
+#	code=excluded.code,
+#	flags=excluded.flags,
+#	past_pending=excluded.current_pending,
+#	past_posted=excluded.current_posted,
+#	current_pending=zeroblob(64),
+#	current_posted=zeroblob(64),
+#	timestamp=UNIXEPOCH();
+#"""
+#	var array = db.fetch_array(query_create_original)
+#	print(array)
+#	array = db.fetch_array(query_create_original)
+#	print(array)
+#	array = db.fetch_array(query_create_original)
+#	print(array)
+#	array = db.fetch_array(query_create_original)
+#	print(array)
+	var array = db.fetch_array("SELECT 
+				name
+			FROM 
+				sqlite_schema
+			WHERE 
+				type ='table' AND 
+				name NOT LIKE 'sqlite_%';")
+	if array.is_empty():
+		print("Can't query SELECT.")
+		return 
+	var query_create = """INSERT INTO entity ("user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
 "current_pending", "current_posted", "timestamp")
-VALUES ("910bbf73-7b4b-48bd-a3db-b9330f9acc76", zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), zeroblob(64), UNIXEPOCH())
-ON CONFLICT(id) DO UPDATE SET
-	user_data=excluded.user_data,
-	reserved=excluded.reserved,
-	shard=excluded.shard,
-	code=excluded.code,
-	flags=excluded.flags,
-	past_pending=excluded.current_pending,
-	past_posted=excluded.current_posted,
-	current_pending=zeroblob(64),
-	current_posted=zeroblob(64),
-	timestamp=UNIXEPOCH();
+VALUES (zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), ?, UNIXEPOCH());
 """
-	var query_create = """
-INSERT INTO entity ("user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
-"current_pending", "current_posted", "timestamp")
-VALUES (zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), zeroblob(64), UNIXEPOCH());
-"""
-	db.query(query_create)
-	db.query(query_create)
-	db.query(query_create)
-	db.query(query_create)
-	var result_create : SQLiteQuery = db.create_query(query_create)
-	print(result_create.get_columns())
-	var packed_array : PackedByteArray
-	packed_array.resize(64)
-	packed_array.fill(1)
-	var statement : Array = ["910bbf73-7b4b-48bd-a3db-b9330f9acc76", var_to_bytes(packed_array)]
-	var batch_array : Array
-	batch_array.push_back(statement)
-	batch_array.push_back(statement)
-	batch_array.push_back(statement)
-	batch_array.push_back(statement)
-	var result_batch = result_create.batch_execute(batch_array)
-	print_debug(result_create.get_last_error_message())
+	var packed_array : Array = PackedByteArray()
+#	var crypto = Crypto.new()
+#	var random_bytes : PackedByteArray = crypto.generate_random_bytes(16)
+#	packed_array.push_back(random_bytes)
+	packed_array.push_back(Quaternion())
+	var statement : Array = [var_to_bytes(packed_array)]
+	print(statement[0].size())
+	var valid : int = db.query_with_args(query_create, statement)
+	if not valid:
+		print("Can't query.")
+		return 
+	valid = db.query_with_args(query_create, statement)
+	if not valid:
+		print("Can't query.")
+		return 
+	valid = db.query_with_args(query_create, statement)
+	if not valid:
+		print("Can't query.")
+		return 
+	valid = db.query_with_args(query_create, statement)
+	if not valid:
+		print("Can't query.")
+		return 
+	db.close();
+
+#	var result_batch = result_create.batch_execute(batch_array)
+#	print_debug(result_create.get_last_error_message())
 #	var query = """SELECT ("id", "user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
 #"current_pending", "current_posted", "timestamp") from entity where "id" = "910bbf73-7b4b-48bd-a3db-b9330f9acc76";"""
 #	var result = db.query(query)
@@ -132,5 +159,3 @@ VALUES (zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblo
 #		return
 #	print(result)
 
-func _process(delta):
-	pass

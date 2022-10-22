@@ -15,8 +15,6 @@
 #include <pthread.h>
 #include <assert.h>
 
-void mvsqlite_bootstrap(void);
-
 typedef int (*sqlite3_initialize_fn)(void);
 typedef int (*sqlite3_open_v2_fn)(
     const char *filename,   /* Database filename (UTF-8) */
