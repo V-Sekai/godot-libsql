@@ -14,7 +14,7 @@ _global_script_class_icons={}
 [application]
 
 config/name="SQLiteTest"
-run/main_scene="res://sqlite_write_test/sqlite_write_scene.tscn"
+run/main_scene="res://sqlite_write/sqlite_write_scene.tscn"
 config/features=PackedStringArray("4.0", "Double Precision")
 config/icon="res://icon.png"
 

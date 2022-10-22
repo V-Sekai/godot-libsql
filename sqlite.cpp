@@ -206,50 +206,20 @@ SQLite::SQLite() {
         @return status
 */
 bool SQLite::open(String path) {
-  if (!path.strip_edges().length())
+  if (!path.strip_edges().length()) {
     return false;
-
-  if (!Engine::get_singleton()->is_editor_hint() &&
-      path.begins_with("res://")) {
-    Ref<FileAccess> dbfile = FileAccess::open(path, FileAccess::READ);
-    if (dbfile.is_null()) {
-      print_error("Cannot open packed database!");
-      return false;
-    }
-    int64_t size = dbfile->get_length();
-    PackedByteArray buffer;
-    buffer.resize(size);
-    buffer.fill(0);
-    dbfile->get_buffer(buffer.ptrw(), size);
-    return open_buffered(path, buffer, size);
   }
-  String mvsqlite_prefix = "mvsqlite://";
-  if (path.begins_with(mvsqlite_prefix)) {
-    print_line(vformat("Opening database %s.", path));
-    String real_path = path.lstrip(mvsqlite_prefix);
-    int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-    if (result != SQLITE_OK) {
-      print_error("Cannot open database.");
-      sqlite3_close_v2(db);
-      db = nullptr;
-      return false;
-    }
-    init_mvsqlite();
-    init_mvsqlite_connection(db);
-    return true;
-  }
-
-  String real_path =
-      ProjectSettings::get_singleton()->globalize_path(path.strip_edges());
-
-  int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-
+  String real_path = ProjectSettings::get_singleton()->globalize_path(path.strip_edges());
+  print_line(vformat("Opening database %s.", path));
+  int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
   if (result != SQLITE_OK) {
-    print_error("Cannot open database!");
+    print_error("Cannot open database.");
     sqlite3_close_v2(db);
+    db = nullptr;
     return false;
   }
-
+  init_mvsqlite();
+  init_mvsqlite_connection(db);
   return true;
 }
 
