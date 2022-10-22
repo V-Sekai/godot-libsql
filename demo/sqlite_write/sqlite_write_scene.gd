@@ -62,7 +62,7 @@ ON CONFLICT(id) DO UPDATE SET
 	current_pending=zeroblob(64),
 	current_posted=zeroblob(64),
 	timestamp=UNIXEPOCH()
-WHERE timestamp < UNIXEPOCH();
+WHERE timestamp < UNIXEPOCH() and excluded.timestamp < timestamp;
 """
 	result_create = db.create_query(query_create_original)
 	var query_delete = """
