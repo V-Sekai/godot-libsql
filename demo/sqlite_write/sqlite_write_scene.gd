@@ -41,7 +41,7 @@ func _process(_delta):
 	if db == null:
 		return
 	var packed_array : Array = Array()
-	packed_array.push_back(Transform3D())
+	packed_array.push_back(global_transform)
 	var bytes : PackedByteArray = var_to_bytes(packed_array)
 	bytes = bytes.compress(FileAccess.COMPRESSION_ZSTD)
 	var statement : Array = [uuid, bytes]
