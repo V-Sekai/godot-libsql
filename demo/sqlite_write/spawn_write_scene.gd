@@ -6,12 +6,28 @@ func _ready():
 	if (!db.open("test")):
 		print("Failed opening database.");
 		return;
-	
-	var truncate_entities : String = """
+	var _create_entity_table : String = """
+DROP TABLE IF EXISTS entity;
+CREATE TABLE entity (
+	id TEXT PRIMARY KEY NOT NULL CHECK(LENGTH(id) = 36),
+	user_data blob NOT NULL CHECK( LENGTH(user_data) = 16) DEFAULT (zeroblob(16)),
+	reserved blob NOT NULL CHECK( LENGTH(reserved) = 48)  DEFAULT (zeroblob(48)),
+	shard	INTEGER NOT NULL,	
+	code	INTEGER NOT NULL,	
+	flags	INTEGER	NOT NULL,
+	past_pending	BLOB NOT NULL CHECK( LENGTH(past_pending) <= 1024) DEFAULT (zeroblob(64)),
+	past_posted BLOB NOT NULL CHECK( LENGTH(past_posted) <= 1024) DEFAULT (zeroblob(64)),
+	current_pending BLOB NOT NULL CHECK( LENGTH(current_pending) <= 1024) DEFAULT (zeroblob(64)),
+	current_posted	BLOB NOT NULL CHECK( LENGTH(current_posted) <= 1024) DEFAULT (zeroblob(64)),
+	timestamp INTEGER NOT NULL
+) WITHOUT ROWID, STRICT;
+"""	
+#	db.query(create_entity_table)
+	var _truncate_entities : String = """
 DELETE FROM entity;
 	"""
-	db.query(truncate_entities)
-	for i in range(128):
+#	db.query(truncate_entities)
+	for i in range(32):
 		var node_3d : Node3D = Node3D.new()
 		var script = load("res://sqlite_write/sqlite_write_scene.gd")
 		node_3d.set_script(script)

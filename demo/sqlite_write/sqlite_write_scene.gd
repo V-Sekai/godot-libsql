@@ -25,43 +25,10 @@ drop view entity_view;
 	hex(randomblob(6))) as uuid;
 	"""
 	uuid = db.fetch_array(select_uuid)[0]["uuid"]
-	var _create_entity_table : String = """
-DROP TABLE IF EXISTS entity;
-CREATE TABLE entity (
-	id TEXT PRIMARY KEY NOT NULL CHECK(LENGTH(id) = 36) DEFAULT(lower(
-	hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-' || '4' || 
-	substr(hex( randomblob(2)), 2) || '-' || 
-	substr('AB89', 1 + (abs(random()) % 4) , 1)  ||
-	substr(hex(randomblob(2)), 2) || '-' || 
-	hex(randomblob(6))
-  )),
-	user_data blob NOT NULL CHECK( LENGTH(user_data) = 16) DEFAULT (zeroblob(16)),
-	reserved blob NOT NULL CHECK( LENGTH(reserved) = 48)  DEFAULT (zeroblob(48)),
-	shard	INTEGER NOT NULL,	
-	code	INTEGER NOT NULL,	
-	flags	INTEGER	NOT NULL,
-	past_pending	BLOB NOT NULL CHECK( LENGTH(past_pending) <= 1024) DEFAULT (zeroblob(64)),
-	past_posted BLOB NOT NULL CHECK( LENGTH(past_posted) <= 1024) DEFAULT (zeroblob(64)),
-	current_pending BLOB NOT NULL CHECK( LENGTH(current_pending) <= 1024) DEFAULT (zeroblob(64)),
-	current_posted	BLOB NOT NULL CHECK( LENGTH(current_posted) <= 1024) DEFAULT (zeroblob(64)),
-	timestamp INTEGER NOT NULL
-) WITHOUT ROWID, STRICT;
-"""	
 	var query_create_original = """
 INSERT INTO entity ("id", "user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
 "current_pending", "current_posted", "timestamp")
-VALUES (?, zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), ?, UNIXEPOCH())
-ON CONFLICT(id) DO UPDATE SET
-	user_data=excluded.user_data,
-	reserved=excluded.reserved,
-	shard=excluded.shard,
-	code=excluded.code,
-	flags=excluded.flags,
-	past_pending=excluded.past_pending,
-	past_posted=excluded.past_posted,
-	current_pending=excluded.current_pending,
-	current_posted=excluded.current_posted,
-	timestamp=excluded.timestamp;
+VALUES (?, zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), ?, UNIXEPOCH());
 """
 	result_create = db.create_query(query_create_original)
 	var query_delete = """
