@@ -2,8 +2,17 @@ extends Node3D
 
 var db : SQLite = null
 var result_create : SQLiteQuery
+var result_delete : SQLiteQuery
+var uuid : String 
 
 func _ready():
+	var crypto = Crypto.new()
+	uuid = crypto.generate_random_bytes(4).hex_encode().trim_prefix("0b").substr(0, 8) + \
+	'-' + crypto.generate_random_bytes(2).hex_encode().trim_prefix("0b").substr(0, 4) + \
+	'-' + '4' + crypto.generate_random_bytes(2).hex_encode().trim_prefix("0b").substr(0, 3) + \
+	'-' + "AB89".substr((abs(randi()) % 4), 1) + crypto.generate_random_bytes(2).hex_encode().trim_prefix("0b").substr(0, 3) + \
+	'-' + crypto.generate_random_bytes(6).hex_encode().trim_prefix("0b").substr(0, 12)
+	uuid = uuid.to_lower()
 	db = SQLite.new();
 	if (!db.open("test")):
 		print("Failed opening database.");
@@ -86,8 +95,6 @@ CREATE TABLE entity (
 #	VALUES (NEW."id", NEW."user_data", NEW."reserved", NEW."shard", NEW."code", NEW."flags", zeroblob(64), zeroblob(64), zeroblob(64), NEW."value", UNIXEPOCH());
 #	END;
 #
-#	DELETE FROM entity
-#	WHERE id = "910bbf73-7b4b-48bd-a3db-b9330f9acc76";"""
 	
 	var query_create_original = """
 INSERT INTO entity ("id", "user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
@@ -106,17 +113,12 @@ ON CONFLICT(id) DO UPDATE SET
 	timestamp=UNIXEPOCH();
 """
 	result_create = db.create_query(query_create_original)
-	print(result_create.get_columns())
-
-#	var query = """SELECT ("id", "user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
-#"current_pending", "current_posted", "timestamp") from entity where "id" = "910bbf73-7b4b-48bd-a3db-b9330f9acc76";"""
-#	var result = db.query(query)
-#	result = db.fetch_array(query)
-#	if result.is_empty():
-#		print_debug("Had no results.")
-#		return
-#	print(result)
-
+	var query_delete = """
+	DELETE FROM entity
+	WHERE id = ?;
+"""
+	result_delete = db.create_query(query_delete)
+	
 func _process(delta):
 	if db == null:
 		return
@@ -127,5 +129,9 @@ func _process(delta):
 	if bytes.size() > 64:
 		return
 	bytes.resize(64)
-	var statement : Array = ["910bbf73-7b4b-48bd-a3db-b9330f9acc76", bytes]
-	var result_batch = result_create.batch_execute([statement])
+	var statement : Array = [uuid, bytes]
+	var _result_batch = result_create.batch_execute([statement])
+
+func _exit_tree():
+	var statement : Array = [uuid]
+	var _result_batch = result_delete.batch_execute([statement])
