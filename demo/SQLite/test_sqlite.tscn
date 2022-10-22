@@ -12,17 +12,13 @@
 script = ExtResource("5_l7232")
 
 [node name="ItemDatabase" type="Node2D" parent="."]
-visible = false
 script = ExtResource("1")
 
 [node name="SqlQueries" type="Node2D" parent="."]
-visible = false
 script = ExtResource("2")
 
 [node name="GameHighScore" type="Node2D" parent="."]
-visible = false
 script = ExtResource("3")
 
 [node name="BLOBData" type="Node2D" parent="."]
-visible = false
 script = ExtResource("4")

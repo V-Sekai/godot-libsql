@@ -10,6 +10,7 @@
 extern "C" {
   void init_mvsqlite(void);
   void init_mvsqlite_connection(sqlite3 *db);
+  void mvsqlite_autocommit_backoff(sqlite3 *db);
 } 
 
 void mvsqlite_bootstrap(void) {
@@ -97,14 +98,17 @@ Variant SQLiteQuery::execute(const Array p_args) {
     ERR_FAIL_V_MSG(Variant(),
                    "Error during arguments set: " + get_last_error_message());
   }
-
+  int autocommit = 0;
   // Execute the query.
   Array result;
   while (true) {
+    autocommit = sqlite3_get_autocommit(db->db);
     const int res = sqlite3_step(stmt);
     if (res == SQLITE_ROW) {
       // Collect the result.
       result.append(fast_parse_row(stmt));
+    } else if (res == SQLITE_BUSY && autocommit) {
+      mvsqlite_autocommit_backoff(db->db);
     } else if (res == SQLITE_DONE) {
       // Nothing more to do.
       break;

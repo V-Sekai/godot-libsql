@@ -1,9 +1,5 @@
 extends Node
 
-# SQLite module
-# Variables
-var item_list = [];
-
 func _ready() -> void:
 	# Create new gdsqlite instance
 	var db = SQLite.new();
