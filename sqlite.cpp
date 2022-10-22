@@ -210,7 +210,6 @@ bool SQLite::open(String path) {
     return false;
   }
   String real_path = ProjectSettings::get_singleton()->globalize_path(path.strip_edges());
-  print_line(vformat("Opening database %s.", path));
   int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
   if (result != SQLITE_OK) {
     print_error("Cannot open database.");
