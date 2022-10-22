@@ -6,13 +6,6 @@ var result_delete : SQLiteQuery
 var uuid : String 
 
 func _ready():
-	var crypto = Crypto.new()
-	uuid = crypto.generate_random_bytes(4).hex_encode().trim_prefix("0b") + \
-	'-' + crypto.generate_random_bytes(2).hex_encode().trim_prefix("0b") + \
-	'-' + '4' + crypto.generate_random_bytes(2).hex_encode().trim_prefix("0b").substr(0, 3) + \
-	'-' + "AB89".substr((abs(randi()) % 4), 1) + crypto.generate_random_bytes(2).hex_encode().trim_prefix("0b").substr(0, 3) + \
-	'-' + crypto.generate_random_bytes(6).hex_encode().trim_prefix("0b")
-	uuid = uuid.to_lower()
 	db = SQLite.new();
 	if (!db.open("test")):
 		print("Failed opening database.");
@@ -24,7 +17,6 @@ drop trigger "entity_interpolate_delete";
 drop view entity_interpolate;
 drop view entity_view;
 """
-	
 	var select_uuid : String = """
 	SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-' || '4' || 
 	substr(hex( randomblob(2)), 2) || '-' || 
