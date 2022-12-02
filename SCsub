@@ -1,18 +1,28 @@
 Import('env')
+import os
+
+# LIBPATH and LIBS need to be set on the real "env" (not the clone)
+# to link the specified libraries to the Godot executable.
+
+# This is a path relative to /modules/tts/ where your .a libraries reside.
+# If you are compiling the module externally (not in the godot source tree),
+# these will need to be full paths.
+
+env.Append(CPPPATH=["."])
+env.Append(LIBPATH=['thirdparty/spmemvfs'])
+env.Append(LIBPATH=['thirdparty/sqlite'])
+env.Append(LIBPATH=['C:/Users/ernes/Downloads/epsilon/modules/mvsqlite/thirdparty/mvsqlite/target/release'])
+env.Append(LIBPATH=['C:/Users/ernes/scoop/apps/openssl-mingw/current/lib64'])
+env.Append(LIBS=['mvsqlite', 'ssl', 'crypto', 'ws2_32', 'bcrypt', 'userenv', 'ntdll'])
 
 module_env = env.Clone()
 module_env.Append(CPPDEFINES=[('SQLITE_ENABLE_RBU', 1)])
 module_env.Append(CPPDEFINES=[('SQLITE_USE_URI', 1)])
-module_env.Prepend(CPPPATH=['thirdparty/sqlite/'])
-module_env.Prepend(CPPPATH=['thirdparty/spmemvfs/'])
 module_env.Append(CPPDEFINES=["SQLITE_ENABLE_JSON1"])
 
 env_thirdparty = module_env.Clone()
 env_thirdparty.disable_warnings()
 env_thirdparty.add_source_files(env.modules_sources, "thirdparty/sqlite/*.c")
 env_thirdparty.add_source_files(env.modules_sources, "thirdparty/spmemvfs/*.c")
-
-env.Append(LIBPATH=['%userprofile%/scoop/apps/openssl-mingw/current/lib64', 'thirdparty/mvsqlite/target/release'])
-env.Append(LIBS=['mvsqlite', 'ssl', 'crypto', 'ws2_32', 'bcrypt', 'userenv', 'ntdll'])
 
 module_env.add_source_files(env.modules_sources, "*.cpp")

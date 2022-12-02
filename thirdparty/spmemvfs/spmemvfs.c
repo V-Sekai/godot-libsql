@@ -32,9 +32,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "spmemvfs.h"
+#include "modules/mvsqlite/thirdparty/spmemvfs/spmemvfs.h"
 
-#include "sqlite3.h"
+#include "modules/mvsqlite/thirdparty/sqlite/sqlite3.h"
 
 /* Useful macros used in several places */
 #define SPMEMVFS_MIN(x,y) ((x)<(y)?(x):(y))

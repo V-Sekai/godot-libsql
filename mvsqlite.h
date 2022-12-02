@@ -1,19 +1,23 @@
-#ifndef GDSQLITE_H
-#define GDSQLITE_H
+#ifndef GD_MVSQLITE_H
+#define GD_MVSQLITE_H
 
 #include "core/config/engine.h"
 #include "core/object/ref_counted.h"
 #include "core/templates/local_vector.h"
 
 // SQLite3
-#include "thirdparty/spmemvfs/spmemvfs.h"
-#include "thirdparty/sqlite/sqlite3.h"
-
-#include "sqlite3.h"
+#include "modules/mvsqlite/thirdparty/sqlite/sqlite3.h"
+#include "modules/mvsqlite/thirdparty/spmemvfs/spmemvfs.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <assert.h>
+
+extern "C" {
+  void init_mvsqlite(void);
+  void init_mvsqlite_connection(sqlite3 *db);
+  void mvsqlite_autocommit_backoff(sqlite3 *db);
+} 
 
 typedef int (*sqlite3_initialize_fn)(void);
 typedef int (*sqlite3_open_v2_fn)(

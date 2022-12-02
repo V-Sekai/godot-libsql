@@ -2,13 +2,12 @@ extends Node3D
 
 
 func _ready():
-	var db : SQLite = SQLite.new();
-	if (!db.open("test")):
+	var db : MVSQLite = MVSQLite.new();
+	if (!db.open("mvsqlite")):
 		print("Failed opening database.");
 		return;
-	var _create_entity_table : String = """
-DROP TABLE IF EXISTS entity;
-CREATE TABLE entity (
+	var create_entity_table : String = """
+CREATE TABLE IF NOT EXISTS entity (
 	id TEXT PRIMARY KEY NOT NULL CHECK(LENGTH(id) = 36),
 	user_data blob NOT NULL CHECK( LENGTH(user_data) = 16) DEFAULT (zeroblob(16)),
 	reserved blob NOT NULL CHECK( LENGTH(reserved) = 48)  DEFAULT (zeroblob(48)),
@@ -22,11 +21,9 @@ CREATE TABLE entity (
 	timestamp INTEGER NOT NULL
 ) WITHOUT ROWID, STRICT;
 """	
-#	db.query(create_entity_table)
-	var _truncate_entities : String = """
-DELETE FROM entity;
-	"""
-#	db.query(truncate_entities)
+	db.query(create_entity_table)
+	var truncate_entities : String = """DELETE FROM entity;"""
+	db.query(truncate_entities)
 	for i in range(32):
 		var node_3d : Node3D = Node3D.new()
 		var script = load("res://sqlite_write/sqlite_write_scene.gd")

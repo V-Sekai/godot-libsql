@@ -1,19 +1,11 @@
+#include "mvsqlite.h"
 #include "core/core_bind.h"
 #include "core/os/os.h"
 #include "editor/project_settings_editor.h"
-#include "sqlite.h"
-
-#include "sqlite3.h"
 
 #define _GNU_SOURCE
 
-extern "C" {
-  void init_mvsqlite(void);
-  void init_mvsqlite_connection(sqlite3 *db);
-  void mvsqlite_autocommit_backoff(sqlite3 *db);
-} 
-
-Array fast_parse_row(sqlite3_stmt *stmt) {
+Array mvsqlite_fast_parse_row(sqlite3_stmt *stmt) {
   Array result;
 
   // Get column count
@@ -102,7 +94,7 @@ Variant MVSQLiteQuery::execute(const Array p_args) {
     const int res = sqlite3_step(stmt);
     if (res == SQLITE_ROW) {
       // Collect the result.
-      result.append(fast_parse_row(stmt));
+      result.append(mvsqlite_fast_parse_row(stmt));
     } else if (res == SQLITE_BUSY && autocommit) {
       mvsqlite_autocommit_backoff(db->db);
     } else if (res == SQLITE_DONE) {
@@ -187,8 +179,8 @@ void MVSQLiteQuery::finalize() {
 void MVSQLiteQuery::_bind_methods() {
   ClassDB::bind_method(D_METHOD("get_last_error_message"),
                        &MVSQLiteQuery::get_last_error_message);
-  ClassDB::bind_method(D_METHOD("execute", "arguments"), &MVSQLiteQuery::execute,
-                       DEFVAL(Array()));
+  ClassDB::bind_method(D_METHOD("execute", "arguments"),
+                       &MVSQLiteQuery::execute, DEFVAL(Array()));
   ClassDB::bind_method(D_METHOD("batch_execute", "rows"),
                        &MVSQLiteQuery::batch_execute);
   ClassDB::bind_method(D_METHOD("get_columns"), &MVSQLiteQuery::get_columns);
@@ -209,8 +201,11 @@ bool MVSQLite::open(String path) {
   if (!path.strip_edges().length()) {
     return false;
   }
-  String real_path = ProjectSettings::get_singleton()->globalize_path(path.strip_edges());
-  int result = sqlite3_open_v2(real_path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+  String real_path =
+      ProjectSettings::get_singleton()->globalize_path(path.strip_edges());
+  int result =
+      sqlite3_open_v2(real_path.utf8().get_data(), &db,
+                      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
   if (result != SQLITE_OK) {
     print_error("Cannot open database.");
     sqlite3_close_v2(db);
@@ -223,7 +218,8 @@ bool MVSQLite::open(String path) {
 }
 
 bool MVSQLite::open_in_memory() {
-  int result = sqlite3_open_v2(":memory:", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+  int result = sqlite3_open_v2(
+      ":memory:", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
   ERR_FAIL_COND_V_MSG(result != SQLITE_OK, false,
                       "Cannot open database in memory, error:" + itos(result));
   return true;
@@ -236,7 +232,8 @@ bool MVSQLite::open_in_memory() {
   @param size Size of the database;
   @return status
 */
-bool MVSQLite::open_buffered(String name, PackedByteArray buffers, int64_t size) {
+bool MVSQLite::open_buffered(String name, PackedByteArray buffers,
+                             int64_t size) {
   if (!name.strip_edges().length()) {
     return false;
   }
@@ -301,7 +298,7 @@ sqlite3_stmt *MVSQLite::prepare(const char *query) {
 
   ERR_FAIL_COND_V_MSG(dbs == nullptr, nullptr,
                       "Cannot prepare query! Database is not opened.");
-  
+
   // Prepare the statement
   sqlite3_stmt *stmt = nullptr;
   int result = sqlite3_prepare_v2(dbs, query, -1, &stmt, nullptr);
@@ -528,7 +525,8 @@ MVSQLite::~MVSQLite() {
   close();
   // Make sure to invalidate all associated queries.
   for (uint32_t i = 0; i < queries.size(); i += 1) {
-    MVSQLiteQuery *query = Object::cast_to<MVSQLiteQuery>(queries[i]->get_ref());
+    MVSQLiteQuery *query =
+        Object::cast_to<MVSQLiteQuery>(queries[i]->get_ref());
     if (query != nullptr) {
       query->init(nullptr, "");
     }

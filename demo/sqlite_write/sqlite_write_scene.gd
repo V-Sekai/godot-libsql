@@ -1,22 +1,15 @@
 extends Node3D
 
-var db : SQLite = null
-var result_create : SQLiteQuery
-var result_delete : SQLiteQuery
+var db : MVSQLite = null
+var result_create : MVSQLiteQuery
+var result_delete : MVSQLiteQuery
 var uuid : String 
 
 func _ready():
-	db = SQLite.new();
-	if (!db.open("test")):
+	db = MVSQLite.new();
+	if (!db.open("mvsqlite")):
 		print("Failed opening database.");
 		return;
-	var _drop : String = """drop table if exists entity;
-drop trigger "entity_interpolate_insert";
-drop trigger "entity_interpolate_update";
-drop trigger "entity_interpolate_delete";
-drop view entity_interpolate;
-drop view entity_view;
-"""
 	var select_uuid : String = """
 	SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-' || '4' || 
 	substr(hex( randomblob(2)), 2) || '-' || 
