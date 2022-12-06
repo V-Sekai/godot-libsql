@@ -1,3 +1,4 @@
 [submodule "thirdparty/mvsqlite"]
 	path = thirdparty/mvsqlite
 	url = https://github.com/fire/mvsqlite.git
+	branch = windows
