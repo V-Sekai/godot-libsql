@@ -17,7 +17,7 @@ extern "C" {
   void init_mvsqlite(void);
   void init_mvsqlite_connection(sqlite3 *db);
   void mvsqlite_autocommit_backoff(sqlite3 *db);
-} 
+}
 
 typedef int (*sqlite3_initialize_fn)(void);
 typedef int (*sqlite3_open_v2_fn)(

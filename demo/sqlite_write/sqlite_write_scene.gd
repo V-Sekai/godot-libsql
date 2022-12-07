@@ -3,7 +3,7 @@ extends Node3D
 var db : MVSQLite = null
 var result_create : MVSQLiteQuery
 var result_delete : MVSQLiteQuery
-var uuid : String 
+var uuid : String
 
 func _ready():
 	db = MVSQLite.new();
@@ -11,8 +11,8 @@ func _ready():
 		print("Failed opening database.");
 		return;
 	var select_uuid : String = """
-	SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-' || '4' || 
-	substr(hex( randomblob(2)), 2) || '-' || 
+	SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-' || '4' ||
+	substr(hex( randomblob(2)), 2) || '-' ||
 	substr('AB89', 1 + (abs(random()) % 4) , 1)  ||
 	substr(hex(randomblob(2)), 2) || '-' ||
 	hex(randomblob(6))) as uuid;
@@ -29,7 +29,7 @@ VALUES (?, zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zero
 	WHERE id = ?;
 """
 	result_delete = db.create_query(query_delete)
-	
+
 func _process(_delta):
 	if db == null:
 		return
