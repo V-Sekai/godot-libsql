@@ -1,7 +1,13 @@
 # config.py
 
+import subprocess
+
 def can_build(env, platform):
-    return False
+    try:
+        subprocess.check_call(["cargo", "--version"])
+    except:
+        return False
+    return True
 
 def configure(env):
     pass
