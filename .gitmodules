@@ -1,4 +1,0 @@
-[submodule "thirdparty/mvsqlite"]
-	path = thirdparty/mvsqlite
-	url = https://github.com/V-Sekai/v-sekai-mvsqlite.git
-	branch = windows
