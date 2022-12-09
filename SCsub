@@ -24,11 +24,7 @@ module_env.Append(CPPDEFINES=[('SQLITE_ENABLE_RBU', 1)])
 module_env.Append(CPPDEFINES=[('SQLITE_USE_URI', 1)])
 module_env.Append(CPPDEFINES=["SQLITE_ENABLE_JSON1"])
 
-import subprocess
-wd = os.getcwd()
-os.chdir(src_folder_path + "/thirdparty/mvsqlite/mvsqlite")
-subprocess.check_call(["cargo", "build", "--release"])
-os.chdir(wd)
+subprocess.check_call(["cargo", "build", "--release", "--path", src_folder_path + "/thirdparty/mvsqlite/mvsqlite"])
 
 env_thirdparty = module_env.Clone()
 env_thirdparty.disable_warnings()
