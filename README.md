@@ -34,6 +34,5 @@ This engine module for Godot is based on gdsqlite-native by Khairul Hidayat in 2
 
 ```bash
 sudo dnf config-manager --set-enabled powertools
-sudo yum install mingw32-pkg-config
-sudo yum install mingw64-openssl
+sudo yum install mingw32-pkg-config mingw64-openssl glibc-static
 ```

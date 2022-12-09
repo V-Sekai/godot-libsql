@@ -13,12 +13,12 @@ env.Append(LIBPATH=['thirdparty/sqlite'])
 import inspect
 src_file_path = inspect.getfile(lambda: None)
 src_folder_path = os.path.dirname(src_file_path)
-env.Append(LIBS=['mvsqlite', 'ssl', 'crypto'])
 
 module_env = env.Clone()
 module_env.Append(CPPDEFINES=[('SQLITE_ENABLE_RBU', 1)])
 module_env.Append(CPPDEFINES=[('SQLITE_USE_URI', 1)])
 module_env.Append(CPPDEFINES=["SQLITE_ENABLE_JSON1"])
+env.Append(LIBS=['mvsqlite'])
 
 import subprocess
 old_cwd = os.getcwd()
@@ -26,15 +26,14 @@ os.chdir("thirdparty/mvsqlite")
 if env["platform"] == "windows":
     env.Append(LIBPATH=[src_folder_path + '/thirdparty/mvsqlite/target/x86_64-pc-windows-gnu/release'])
     env.Append(LIBPATH=['C:/Users/ernes/scoop/apps/openssl-mingw/current/lib64'])
+    env.ParseConfig("mingw64-pkg-config --libs --static libcrypto")
+    env.ParseConfig("mingw64-pkg-config --libs --static libssl")
     env.Append(LIBS=['ws2_32', 'bcrypt', 'userenv', 'ntdll'])
     subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
 elif env["platform"] == "linuxbsd":
-    env.Append(LIBPATH=['/usr/x86_64-w64-mingw32/sys-root/mingw/lib/'])
-    env.ParseConfig("mingw64-pkg-config --libs --static libcrypto")
-    env.ParseConfig("mingw64-pkg-config --libs --static libssl")
-    env.Append(LIBS=['pthread'])
     env.Append(LIBPATH=[src_folder_path + '/thirdparty/mvsqlite/target/x86_64-unknown-linux-gnu/release'])
     subprocess.check_call(["cargo", "build", "--target", "x86_64-unknown-linux-gnu", "--release", "--package", "mvsqlite"])
+    env.Append(LIBS=['pthread', 'm', 'dl'])
 elif env["platform"] == "ios":
     env.Append(LIBPATH=[src_folder_path + '/thirdparty/mvsqlite/target/apple-ios/release'])
     subprocess.check_call(["cargo", "build", "--target", "apple-ios", "--release", "--package", "mvsqlite"])
@@ -42,6 +41,7 @@ elif env["platform"] == "macos":
     env.Append(LIBPATH=[src_folder_path + '/thirdparty/mvsqlite/target/x86_64-apple-darwin/release'])
     subprocess.check_call(["cargo", "build", "--target", "x86_64-apple-darwin", "--release", "--package", "mvsqlite"])
 os.chdir(old_cwd)
+env.Append(LIBS=['crypt'])
 
 env_thirdparty = module_env.Clone()
 env_thirdparty.disable_warnings()
