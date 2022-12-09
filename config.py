@@ -7,7 +7,7 @@ def can_build(env, platform):
         subprocess.check_call(["cargo", "--version"])
     except:
         return False
-    return True and not env.msvc and platform.platform().lower() != "windows"
+    return True and not env.msvc and platform != "windows"
 
 def configure(env):
     pass
