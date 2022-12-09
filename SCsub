@@ -30,6 +30,8 @@ if env["platform"] == "windows":
     subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
 elif env["platform"] == "linuxbsd":
     env.Append(LIBPATH=['/usr/x86_64-w64-mingw32/sys-root/mingw/lib/'])
+    env.ParseConfig("mingw64-pkg-config --libs --static libcrypto")
+    env.ParseConfig("mingw64-pkg-config --libs --static libssl)
     env.Append(LIBPATH=[src_folder_path + '/thirdparty/mvsqlite/target/x86_64-unknown-linux-gnu/release'])
     subprocess.check_call(["cargo", "build", "--target", "x86_64-unknown-linux-gnu", "--release", "--package", "mvsqlite"])
 elif env["platform"] == "ios":
