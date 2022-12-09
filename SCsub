@@ -24,11 +24,10 @@ module_env.Append(CPPDEFINES=[('SQLITE_ENABLE_RBU', 1)])
 module_env.Append(CPPDEFINES=[('SQLITE_USE_URI', 1)])
 module_env.Append(CPPDEFINES=["SQLITE_ENABLE_JSON1"])
 
-full_folder_directory = src_folder_path + "/thirdparty/mvsqlite/"
-import subprocess
-
+full_folder_directory = src_folder_path + "/thirdparty/mvsqlite/mvsqlite"
 current_directory = os.getcwd()
 os.chdir(full_folder_directory)
+import subprocess
 if env["platform"] == "windows":
     subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
 elif env["platform"] == "linuxbsd":
@@ -41,7 +40,7 @@ os.chdir(current_directory)
 
 env_thirdparty = module_env.Clone()
 env_thirdparty.disable_warnings()
-env_thirdparty.add_source_files(env.modules_sources, "thirdparty/sqlite/*.c")
+env_thirdparty.add_source_files(env.modules_sources, "thirdparty/mvsqslite/mvsqlite-sqlite3/*.c")
 env_thirdparty.add_source_files(env.modules_sources, "thirdparty/spmemvfs/*.c")
 
 module_env.add_source_files(env.modules_sources, "*.cpp")
