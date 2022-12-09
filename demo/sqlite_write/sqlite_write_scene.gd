@@ -21,7 +21,7 @@ func _ready():
 	var query_create_original = """
 INSERT INTO entity ("id", "user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
 "current_pending", "current_posted", "timestamp")
-VALUES (?, zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), ?, UNIXEPOCH());
+VALUES (?, zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), ?, 0);
 """
 	result_create = db.create_query(query_create_original)
 	var query_delete = """
