@@ -8,7 +8,6 @@ import os
 # If you are compiling the module externally (not in the godot source tree),
 # these will need to be full paths.
 
-env.Append(CPPPATH=["."])
 env.Append(LIBPATH=['thirdparty/spmemvfs'])
 env.Append(LIBPATH=['thirdparty/sqlite'])
 
