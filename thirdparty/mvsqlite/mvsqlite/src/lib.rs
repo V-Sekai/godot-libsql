@@ -126,8 +126,10 @@ fn init_with_options_impl(opts: InitOptions) {
         }
         builder.build().expect("failed to build http client")
     };
-
-    let data_plane = std::env::var("MVSQLITE_DATA_PLANE").expect("MVSQLITE_DATA_PLANE is not set");
+    let mut data_plane: String = "http://localhost:7000".to_string();
+    if let Ok(ret) = std::env::var("MVSQLITE_DATA_PLANE") {
+        data_plane = ret;
+    };
     let io_engine = if opts.fork_tolerant {
         let kind = opts.io_engine_kind;
         AbstractIoEngine::Builder(Arc::new(Box::new(move || Arc::new(IoEngine::new(kind)))))
