@@ -6,11 +6,10 @@
 #include "core/templates/local_vector.h"
 
 // SQLite3
-#include "modules/mvsqlite/thirdparty/sqlite/sqlite3.h"
+#include "modules/mvsqlite/thirdparty/mvsqlite/mvsqlite-sqlite3/sqlite3.h"
 #include "modules/mvsqlite/thirdparty/spmemvfs/spmemvfs.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <pthread.h>
 #include <assert.h>
 
 extern "C" {
