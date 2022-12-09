@@ -6,8 +6,8 @@
 #include "core/templates/local_vector.h"
 
 // SQLite3
-#include "modules/mvsqlite/thirdparty/mvsqlite/mvsqlite-sqlite3/sqlite3.h"
-#include "modules/mvsqlite/thirdparty/spmemvfs/spmemvfs.h"
+#include "thirdparty/mvsqlite/mvsqlite-sqlite3/sqlite3.h"
+#include "thirdparty/spmemvfs/spmemvfs.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>

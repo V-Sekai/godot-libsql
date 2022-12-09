@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "modules/mvsqlite/thirdparty/spmemvfs/spmemvfs.h"
+#include "spmemvfs.h"
 
 #include "modules/mvsqlite/thirdparty/mvsqlite/mvsqlite-sqlite3/sqlite3.h"
 
