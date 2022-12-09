@@ -7,7 +7,7 @@ def can_build(env, platform):
         subprocess.check_call(["cargo", "--version"])
     except:
         return False
-    return True
+    return False # Disable for now.
 
 def configure(env):
     pass
