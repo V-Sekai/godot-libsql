@@ -26,7 +26,7 @@ import subprocess
 old_cwd = os.getcwd()
 os.chdir("thirdparty/mvsqlite")
 if env["platform"] == "windows":
-    env.Append(LIBPATH=[src_folder_path + '/thirdparty/mvsqlite/target/x86_64-pc-windows-msvc/release'])
+    env.Append(LIBPATH=[src_folder_path + '/thirdparty/mvsqlite/target/x86_64-pc-windows-gnu/release'])
     env.Append(LIBPATH=['C:/Users/ernes/scoop/apps/openssl-mingw/current/lib64'])
     env.Append(LIBS=['ws2_32', 'bcrypt', 'userenv', 'ntdll'])
     subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
