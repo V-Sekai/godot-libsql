@@ -188,7 +188,6 @@ void MVSQLiteQuery::_bind_methods() {
 
 MVSQLite::MVSQLite() {
   db = nullptr;
-  memory_read = false;
 }
 /*
         Open a database file.
@@ -217,50 +216,6 @@ bool MVSQLite::open(String path) {
   return true;
 }
 
-bool MVSQLite::open_in_memory() {
-  int result = sqlite3_open_v2(
-      ":memory:", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-  ERR_FAIL_COND_V_MSG(result != SQLITE_OK, false,
-                      "Cannot open database in memory, error:" + itos(result));
-  return true;
-}
-
-/*
-  Open the database and initialize memory buffer.
-  @param name Name of the database.
-  @param buffers The database buffer.
-  @param size Size of the database;
-  @return status
-*/
-bool MVSQLite::open_buffered(String name, PackedByteArray buffers,
-                             int64_t size) {
-  if (!name.strip_edges().length()) {
-    return false;
-  }
-
-  if (!buffers.size() || !size) {
-    return false;
-  }
-
-  spmembuffer_t *p_mem = (spmembuffer_t *)calloc(1, sizeof(spmembuffer_t));
-  p_mem->total = p_mem->used = size;
-  p_mem->data = (char *)malloc(size + 1);
-  memcpy(p_mem->data, buffers.ptr(), size);
-  p_mem->data[size] = '\0';
-
-  //
-  spmemvfs_env_init();
-  int err = spmemvfs_open_db(&p_db, name.utf8().get_data(), p_mem);
-
-  if (err != SQLITE_OK || p_db.mem != p_mem) {
-    print_error("Cannot open buffered database!");
-    return false;
-  }
-
-  memory_read = true;
-  return true;
-}
-
 void MVSQLite::close() {
   // Finalize all queries before close the DB.
   // Reverse order because I need to remove the not available queries.
@@ -282,13 +237,6 @@ void MVSQLite::close() {
     } else {
       db = nullptr;
     }
-  }
-
-  if (memory_read) {
-    // Close virtual filesystem database
-    spmemvfs_close_db(&p_db);
-    spmemvfs_env_fini();
-    memory_read = false;
   }
 }
 
@@ -535,9 +483,6 @@ MVSQLite::~MVSQLite() {
 
 void MVSQLite::_bind_methods() {
   ClassDB::bind_method(D_METHOD("open", "path"), &MVSQLite::open);
-  ClassDB::bind_method(D_METHOD("open_in_memory"), &MVSQLite::open_in_memory);
-  ClassDB::bind_method(D_METHOD("open_buffered", "path", "buffers", "size"),
-                       &MVSQLite::open_buffered);
 
   ClassDB::bind_method(D_METHOD("close"), &MVSQLite::close);
 

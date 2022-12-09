@@ -7,7 +7,6 @@
 
 // SQLite3
 #include "thirdparty/mvsqlite/mvsqlite-sqlite3/sqlite3.h"
-#include "thirdparty/spmemvfs/spmemvfs.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -115,15 +114,11 @@ private:
   // sqlite handler
   sqlite3 *db;
 
-  // vfs
-  spmemvfs_db_t p_db;
-  bool memory_read;
-
   ::LocalVector<WeakRef *, uint32_t, true> queries;
 
   sqlite3_stmt *prepare(const char *statement);
   Array fetch_rows(String query, Array args, int result_type = RESULT_BOTH);
-  sqlite3 *get_handler() const { return memory_read ? p_db.handle : db; }
+  sqlite3 *get_handler() const { return db; }
   Dictionary parse_row(sqlite3_stmt *stmt, int result_type);
 
 public:
@@ -140,8 +135,6 @@ public:
 
   // methods
   bool open(String path);
-  bool open_in_memory();
-  bool open_buffered(String name, PackedByteArray buffers, int64_t size);
   void close();
 
   /// Compiles the query into bytecode and returns an handle to it for a faster
