@@ -142,14 +142,6 @@ public:
   /// Note: you can create the query at any time, but you can execute it only
   /// when the DB is open.
   Ref<MVSQLiteQuery> create_query(String p_query);
-
-  bool query(String statement);
-  bool query_with_args(String statement, Array args);
-  Array fetch_array(String statement);
-  Array fetch_array_with_args(String statement, Array args);
-  Array fetch_assoc(String statement);
-  Array fetch_assoc_with_args(String statement, Array args);
-
   String get_last_error_message() const;
 };
 #endif

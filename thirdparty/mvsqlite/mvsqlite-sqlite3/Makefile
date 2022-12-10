@@ -12,6 +12,7 @@ build-patched-sqlite3-windows:
 		-DSQLITE_ENABLE_DBSTAT_VTAB \
 		-DSQLITE_ENABLE_MATH_FUNCTIONS \
 		-DSQLITE_ENABLE_COLUMN_METADATA \
+		-DSQLITE_ENABLE_JSON1 \
 		./sqlite3.c ./shim.c ./shell.c \
 			-L"$(USERPROFILE)/scoop/apps/openssl-mingw/current/lib64" -L../target/release -lmvsqlite -lpthread -lm -lws2_32 -lbcrypt -luserenv -lntdll
 
@@ -24,6 +25,7 @@ build-patched-sqlite3:
 		-DSQLITE_ENABLE_DBSTAT_VTAB \
 		-DSQLITE_ENABLE_MATH_FUNCTIONS \
 		-DSQLITE_ENABLE_COLUMN_METADATA \
+		-DSQLITE_ENABLE_JSON1 \
 		./sqlite3.c ./shim.c ./shell.c \
 			-L"$(USERPROFILE)/scoop/apps/openssl-mingw/current/lib64" -L../target/release -lmvsqlite -lpthread -lm -ldl
 

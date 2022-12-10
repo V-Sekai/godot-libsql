@@ -200,18 +200,14 @@ bool MVSQLite::open(String path) {
   if (!path.strip_edges().length()) {
     return false;
   }
-  String real_path =
-      ProjectSettings::get_singleton()->globalize_path(path.strip_edges());
-  int result =
-      sqlite3_open_v2(real_path.utf8().get_data(), &db,
-                      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+  init_mvsqlite();
+  int result = sqlite3_open_v2(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
   if (result != SQLITE_OK) {
-    print_error("Cannot open database.");
+    print_error("Cannot open the database.");
     sqlite3_close_v2(db);
     db = nullptr;
     return false;
   }
-  init_mvsqlite();
   init_mvsqlite_connection(db);
   return true;
 }
@@ -317,28 +313,6 @@ bool MVSQLite::bind_args(sqlite3_stmt *stmt, Array args) {
   return true;
 }
 
-bool MVSQLite::query_with_args(String query, Array args) {
-  sqlite3_stmt *stmt = prepare(query.utf8().get_data());
-
-  // Failed to prepare the query
-  ERR_FAIL_COND_V_MSG(stmt == nullptr, false,
-                      "MVSQLiteQuery preparation error: " +
-                          get_last_error_message());
-
-  // Error occurred during argument binding
-  if (!bind_args(stmt, args)) {
-    sqlite3_finalize(stmt);
-    ERR_FAIL_V_MSG(false,
-                   "Error during arguments bind: " + get_last_error_message());
-  }
-
-  // Evaluate the sql query
-  sqlite3_step(stmt);
-  sqlite3_finalize(stmt);
-
-  return true;
-}
-
 Ref<MVSQLiteQuery> MVSQLite::create_query(String p_query) {
   Ref<MVSQLiteQuery> query;
   query.instantiate();
@@ -349,119 +323,6 @@ Ref<MVSQLiteQuery> MVSQLite::create_query(String p_query) {
   queries.push_back(wr);
 
   return query;
-}
-
-bool MVSQLite::query(String query) {
-  return this->query_with_args(query, Array());
-}
-
-Array MVSQLite::fetch_rows(String statement, Array args, int result_type) {
-  Array result;
-
-  // Empty statement
-  if (!statement.strip_edges().length()) {
-    return result;
-  }
-
-  // Cannot prepare query
-  sqlite3_stmt *stmt = prepare(statement.strip_edges().utf8().get_data());
-  if (!stmt) {
-    return result;
-  }
-
-  // Bind arguments
-  if (!bind_args(stmt, args)) {
-    sqlite3_finalize(stmt);
-    return result;
-  }
-
-  // Fetch rows
-  while (sqlite3_step(stmt) == SQLITE_ROW) {
-    // Do a step
-    result.append(parse_row(stmt, result_type));
-  }
-
-  // Delete prepared statement
-  sqlite3_finalize(stmt);
-
-  // Return the result
-  return result;
-}
-
-Dictionary MVSQLite::parse_row(sqlite3_stmt *stmt, int result_type) {
-  Dictionary result;
-
-  // Get column count
-  int col_count = sqlite3_column_count(stmt);
-
-  // Fetch all column
-  for (int i = 0; i < col_count; i++) {
-    // Key name
-    const char *col_name = sqlite3_column_name(stmt, i);
-    String key = String(col_name);
-
-    // Value
-    int col_type = sqlite3_column_type(stmt, i);
-    Variant value;
-
-    // Get column value
-    switch (col_type) {
-    case SQLITE_INTEGER:
-      value = Variant(sqlite3_column_int(stmt, i));
-      break;
-
-    case SQLITE_FLOAT:
-      value = Variant(sqlite3_column_double(stmt, i));
-      break;
-
-    case SQLITE_TEXT: {
-      int size = sqlite3_column_bytes(stmt, i);
-      String str =
-          String::utf8((const char *)sqlite3_column_text(stmt, i), size);
-      value = Variant(str);
-      break;
-    }
-    case SQLITE_BLOB: {
-      PackedByteArray arr;
-      int size = sqlite3_column_bytes(stmt, i);
-      arr.resize(size);
-      memcpy((void *)arr.ptr(), sqlite3_column_blob(stmt, i), size);
-      value = Variant(arr);
-      break;
-    }
-
-    default:
-      break;
-    }
-
-    // Set dictionary value
-    if (result_type == RESULT_NUM)
-      result[i] = value;
-    else if (result_type == RESULT_ASSOC)
-      result[key] = value;
-    else {
-      result[i] = value;
-      result[key] = value;
-    }
-  }
-
-  return result;
-}
-
-Array MVSQLite::fetch_array(String query) {
-  return fetch_rows(query, Array(), RESULT_BOTH);
-}
-
-Array MVSQLite::fetch_array_with_args(String query, Array args) {
-  return fetch_rows(query, args, RESULT_BOTH);
-}
-
-Array MVSQLite::fetch_assoc(String query) {
-  return fetch_rows(query, Array(), RESULT_ASSOC);
-}
-
-Array MVSQLite::fetch_assoc_with_args(String query, Array args) {
-  return fetch_rows(query, args, RESULT_ASSOC);
 }
 
 String MVSQLite::get_last_error_message() const {
@@ -482,22 +343,9 @@ MVSQLite::~MVSQLite() {
 }
 
 void MVSQLite::_bind_methods() {
+  ClassDB::bind_method(D_METHOD("get_last_error_message"), &MVSQLite::get_last_error_message);
   ClassDB::bind_method(D_METHOD("open", "path"), &MVSQLite::open);
-
   ClassDB::bind_method(D_METHOD("close"), &MVSQLite::close);
-
   ClassDB::bind_method(D_METHOD("create_query", "statement"),
                        &MVSQLite::create_query);
-
-  ClassDB::bind_method(D_METHOD("query", "statement"), &MVSQLite::query);
-  ClassDB::bind_method(D_METHOD("query_with_args", "statement", "args"),
-                       &MVSQLite::query_with_args);
-  ClassDB::bind_method(D_METHOD("fetch_array", "statement"),
-                       &MVSQLite::fetch_array);
-  ClassDB::bind_method(D_METHOD("fetch_array_with_args", "statement", "args"),
-                       &MVSQLite::fetch_array_with_args);
-  ClassDB::bind_method(D_METHOD("fetch_assoc", "statement"),
-                       &MVSQLite::fetch_assoc);
-  ClassDB::bind_method(D_METHOD("fetch_assoc_with_args", "statement", "args"),
-                       &MVSQLite::fetch_assoc_with_args);
 }

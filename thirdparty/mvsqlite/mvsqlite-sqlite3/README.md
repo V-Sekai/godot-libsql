@@ -12,7 +12,7 @@ scoop install llvm openssl-mingw
 cargo build --release -p mvsqlite
 cd mvsqlite-sqlite3
 set CC="%userprofile%/scoop/apps/mingw/current/bin/x86_64-w64-mingw32-gcc.exe"
-mingw32-make.exe build-patched-sqlite3
+mingw32-make.exe build-patched-sqlite3-windows
 ```
 
 ## Check fdb status
@@ -27,12 +27,20 @@ configure single ssd
 status
 ```
 
-## Start sqlite client
+## Start sqlite client on Windows
 
 ```cmd
 $env:RUST_LOG="info"
 $env:MVSQLITE_DATA_PLANE="http://localhost:7000"
 sqlite3.exe mvsqlite
+.tables
+```
+
+## Start sqlite client
+
+```cmd
+export RUST_LOG="info" MVSQLITE_DATA_PLANE="http://localhost:7000"
+./sqlite3 mvsqlite
 .tables
 ```
 
@@ -119,7 +127,7 @@ typedef int fdb_bool_t;
 
 ```bat
 scoop install curl
-curl http://localhost:7001/api/create_namespace --include --data {\"key\":\"mvsqlite\"}
+curl http://192.168.0.39:7001/api/create_namespace --include --data {\"key\":\"mvsqlite\"}
 ```
 
 ## Debugging library loading

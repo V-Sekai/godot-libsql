@@ -3,6 +3,7 @@ extends Node3D
 var db : MVSQLite = null
 var result_create : MVSQLiteQuery
 var result_delete : MVSQLiteQuery
+var result_fetch : MVSQLiteQuery
 var uuid : String
 
 func _ready():
@@ -17,11 +18,14 @@ func _ready():
 	substr(hex(randomblob(2)), 2) || '-' ||
 	hex(randomblob(6))) as uuid;
 	"""
-	uuid = db.fetch_array(select_uuid)[0]["uuid"]
+	result_fetch = db.create_query(select_uuid)
+	uuid = result_fetch.execute()[0][0]
+	print(uuid)
 	var query_create_original = """
 INSERT INTO entity ("id", "user_data", "reserved", "shard", "code", "flags", "past_pending", "past_posted",
 "current_pending", "current_posted", "timestamp")
-VALUES (?, zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), ?, 0);
+VALUES (?, zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zeroblob(64), ?, 0)
+ON CONFLICT("id") DO UPDATE SET id="id";
 """
 	result_create = db.create_query(query_create_original)
 	var query_delete = """
@@ -38,8 +42,8 @@ func _process(_delta):
 	var bytes : PackedByteArray = var_to_bytes(packed_array)
 	bytes = bytes.compress(FileAccess.COMPRESSION_ZSTD)
 	var statement : Array = [uuid, bytes]
-	var _result_batch = result_create.batch_execute([statement])
+	var _result_batch = result_create.execute(statement)
 
 func _exit_tree():
 	var statement : Array = [uuid]
-	var _result_batch = result_delete.batch_execute([statement])
+	var _result_batch = result_delete.execute(statement)
