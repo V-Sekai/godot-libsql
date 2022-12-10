@@ -65,6 +65,15 @@ Server assisted transfer of players.
 
 I am on server 1 and I want to teleport to server 2.
 
+### List of ideas
+
+| Who | Idea | Evaluation |
+|---|---|---|
+| Fire | World persistence | Definitely |
+| Fire | Frame proxying | Bad performance |
+| Fire | Inventory | Can save any Variant or ByteArray |
+| 74hc595 | Movie mode record and replay player actions | Movies! Yeah! |
+
 ### References
 
 https://chrisseaton.com/army/ explained the difference between goals and tactics.
