@@ -2,7 +2,6 @@ extends Node3D
 
 var db : MVSQLite = null
 var result_create : MVSQLiteQuery
-var result_delete : MVSQLiteQuery
 var result_fetch : MVSQLiteQuery
 var uuid : String
 
@@ -28,12 +27,8 @@ VALUES (?, zeroblob(16), zeroblob(48), 0, 0, 0, zeroblob(64), zeroblob(64), zero
 ON CONFLICT("id") DO UPDATE SET id="id";
 """
 	result_create = db.create_query(query_create_original)
-	var query_delete = """
-	DELETE FROM entity
-	WHERE id = ?;
-"""
-	result_delete = db.create_query(query_delete)
 
+	
 func _process(_delta):
 	if db == null:
 		return
@@ -45,5 +40,10 @@ func _process(_delta):
 	var _result_batch = result_create.execute(statement)
 
 func _exit_tree():
-	var statement : Array = [uuid]
-	var _result_batch = result_delete.execute(statement)
+	pass
+	# 	var query_delete = """
+	# 	DELETE FROM entity
+	# 	WHERE id = ?;
+	# """
+	# var result_delete : MVSQLiteQuery = db.create_query(query_delete)
+	# var _result_batch = result_delete.execute(statement)
