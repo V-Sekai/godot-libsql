@@ -16,6 +16,13 @@ Move to the modules folder inside of the Godot Engine source.
 mv mvsqlite godot/modules/
 ```
 
+## Dependencies on Rocky Linux 8
+
+```bash
+sudo dnf config-manager --set-enabled powertools
+sudo yum install mingw32-pkg-config mingw64-openssl glibc-static
+```
+
 ## Example usage
 
 - [SQL Queries](https://github.com/godot-extended-libraries/godot-sqlite/blob/master/demo/SQLite/sql_queries.gd)
@@ -25,10 +32,3 @@ mv mvsqlite godot/modules/
 ## Attribution
 
 This engine module for Godot is based on gdsqlite-native by Khairul Hidayat in 2017.
-
-## Dependencies on Rocky Linux 8
-
-```bash
-sudo dnf config-manager --set-enabled powertools
-sudo yum install mingw32-pkg-config mingw64-openssl glibc-static
-```
