@@ -31,23 +31,10 @@ if env["platform"] == "windows" and not env.msvc:
     env.Append(LIBPATH=["C:/Users/ernes/scoop/apps/openssl-mingw/current/lib64"])
     env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-pc-windows-gnu/release/"])
     env.Append(LIBS=["mvsqlite", "crypto", "ws2_32", "bcrypt", "userenv", "ntdll"])
-if env["platform"] == "windows" and env.msvc and python_platform.system() == "Windows":
-    env.Append(LIBPATH=["C:/Users/ernes/scoop/apps/openssl/current/lib"])
-    subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-msvc", "--release", "--package", "mvsqlite"])
-    env.Append(LINKFLAGS=["libcrypto.lib", src_folder_path + "/thirdparty/mvsqlite/target/x86_64-pc-windows-msvc/release/mvsqlite.lib", "libcrypto_static.lib", "ws2_32.lib", "bcrypt.lib", "userenv.lib", "ntdll.lib"])
-
-# elif env["platform"] == "linuxbsd":
-#     env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-unknown-linux-gnu/release"])
-#     subprocess.check_call(["cargo", "build", "--target", "x86_64-unknown-linux-gnu", "--release", "--package", "mvsqlite"])
-#     LIBS += ["mvsqlite", "pthread", "m", "dl"]
-# elif env["platform"] == "ios":
-#     env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/apple-ios/release"])
-#     subprocess.check_call(["cargo", "build", "--target", "apple-ios", "--release", "--package", "mvsqlite"])
-#     LIBS += ["mvsqlite", "pthread", "m", "dl"]
-# elif env["platform"] == "macos":
-#     env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-apple-darwin/release"])
-#     subprocess.check_call(["cargo", "build", "--target", "x86_64-apple-darwin", "--release", "--package", "mvsqlite"])
-#     LIBS += ["mvsqlite", "pthread", "m", "dl"]
+elif env["platform"] == "linuxbsd":
+    env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-unknown-linux-gnu/release"])
+    subprocess.check_call(["cargo", "build", "--target", "x86_64-unknown-linux-gnu", "--release", "--package", "mvsqlite"])
+    env.Append(LIBS=["mvsqlite", "pthread", "m", "dl"])
 
 env_mvsqlite = env.Clone()
 env_mvsqlite.Append(CPPPATH=["thirdparty/sqlite3"])
