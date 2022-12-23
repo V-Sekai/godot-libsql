@@ -381,3 +381,5 @@ updown.png
 gcov.css
 
 demo/.godot/
+
+thirdparty/sqlite3/sqlite3.exe

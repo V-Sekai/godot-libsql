@@ -9,21 +9,14 @@ REM scoop install llvm-mingw@20220323
 cmd
 scoop uninstall llvm-mingw
 scoop install llvm openssl-mingw
-cargo build --release -p mvsqlite
-cd mvsqlite-sqlite3
-set CC="%userprofile%/scoop/apps/mingw/current/bin/x86_64-w64-mingw32-gcc.exe"
-mingw32-make.exe build-patched-sqlite3-windows
+cd thirdparty/sqlite3
+mingw32-make.exe
 ```
 
 ## Check fdb status
 
 ```bash
 'C:\Program Files\foundationdb\bin\fdbcli.exe'
-status
-# Migrate the database from in-memory to ssd
-configure perpetual_storage_wiggle=1 storage_migration_type=gradual
-configure single ssd
-# Check the status
 status
 ```
 
@@ -39,9 +32,27 @@ sqlite3.exe mvsqlite
 ## Start sqlite client
 
 ```cmd
-export RUST_LOG="info" MVSQLITE_DATA_PLANE="http://localhost:7000"
+$env:RUST_LOG="info"
+$env:MVSQLITE_DATA_PLANE="http://localhost:7000"
 ./sqlite3 mvsqlite
 .tables
+```
+
+## Starting mvstore with foundationdb on Windows
+
+```bash
+cmd
+REM install https://github.com/apple/foundationdb/releases/download/7.1.25/foundationdb-7.1.25-x64.msi
+REM Copy fdb_c_types.h
+set CC=%userprofile%/scoop/apps/mingw/current/bin/x86_64-w64-mingw32-gcc.exe
+scoop install openssl openssl-mingw
+scoop install rustup
+rustup update
+rustup target add x86_64-pc-windows-gnu
+rustup target add x86_64-pc-windows-msvc
+cargo build --release -p mvstore
+$env:RUST_LOG="info"
+mvstore.exe --data-plane 127.0.0.1:7000 --admin-api 127.0.0.1:7001 --metadata-prefix mvstore --raw-data-prefix m --cluster "C:/ProgramData/foundationdb/fdb.cluster"
 ```
 
 ## Starting mvstore with foundationdb on Linux
@@ -60,16 +71,6 @@ RUST_LOG=info ./mvstore \
   --raw-data-prefix m
 ```
 
-## Starting mvstore with foundationdb on Windows
-
-```bash
-cmd
-REM install https://github.com/apple/foundationdb/releases/download/7.1.25/foundationdb-7.1.25-x64.msi
-REM Copy fdb_c_types.h
-cargo build --release -p mvstore
-$env:RUST_LOG="info"
-./mvstore.exe --data-plane 127.0.0.1:7000 --admin-api 127.0.0.1:7001 --metadata-prefix mvstore --raw-data-prefix m --cluster "C:/ProgramData/foundationdb/fdb.cluster"
-```
 
 ## Copy fdb_c_types.h to `C:/Program Files/foundationdb/include/foundationdb/fdb_c_types.h`
 

@@ -1,12 +1,10 @@
-#ifndef GD_MVSQLITE_H
-#define GD_MVSQLITE_H
+#ifndef MVSQLITE_H
+#define MVSQLITE_H
 
-#include "core/config/engine.h"
 #include "core/object/ref_counted.h"
 #include "core/templates/local_vector.h"
 
-// SQLite3
-#include "thirdparty/mvsqlite/mvsqlite-sqlite3/sqlite3.h"
+#include "thirdparty/sqlite3/sqlite3.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -144,4 +142,4 @@ public:
   Ref<MVSQLiteQuery> create_query(String p_query);
   String get_last_error_message() const;
 };
-#endif
+#endif // MVSQLITE_H

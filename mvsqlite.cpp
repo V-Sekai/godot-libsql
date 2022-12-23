@@ -3,6 +3,8 @@
 #include "core/os/os.h"
 #include "editor/project_settings_editor.h"
 
+#include "thirdparty/sqlite3/sqlite3.h"
+
 #define _GNU_SOURCE
 
 Array mvsqlite_fast_parse_row(sqlite3_stmt *stmt) {
