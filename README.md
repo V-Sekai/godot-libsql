@@ -22,6 +22,8 @@ Move to the modules folder inside of the Godot Engine source.
 mv mvsqlite godot/modules/
 ```
 
+See https://github.com/V-Sekai/godot-mvsqlite/blob/main/README.mvsqlite.md
+
 ## Dependencies on Rocky Linux 8
 
 ```bash
