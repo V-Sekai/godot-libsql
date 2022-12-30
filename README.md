@@ -1,6 +1,6 @@
-# godot-sqlite
+# godot-mvsqlite
 
-[SQLite3](https://www.sqlite.org/) wrapper for Godot Engine
+[mvsqlite](https://github.com/losfair/mvsqlite) wrapper for Godot Engine
 
 ## Dependencies
 
