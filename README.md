@@ -2,6 +2,12 @@
 
 [SQLite3](https://www.sqlite.org/) wrapper for Godot Engine
 
+## Dependencies
+
+* rust
+* https://docs.godotengine.org/en/latest/development/compiling/index.html
+* Foundatiodb https://github.com/apple/foundationdb/releases
+
 ## Git Installation
 
 Download using git.
