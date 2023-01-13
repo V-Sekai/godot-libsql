@@ -8,6 +8,7 @@ def can_build(env, platform):
         return False
     try:
         subprocess.check_call(["cargo", "--version"])
+        subprocess.check_call(["mingw64-pkg-config"])
     except:
         return False
     return True
