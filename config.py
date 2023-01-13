@@ -8,7 +8,8 @@ def can_build(env, platform):
         return False
     try:
         subprocess.check_call(["cargo", "--version"])
-        subprocess.check_call(["mingw64-pkg-config"])
+        subprocess.check_call(["/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig"])
+        subprocess.check_call(["/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig --libs --static libcrypto"])
     except:
         return False
     return True
