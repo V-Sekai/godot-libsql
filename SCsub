@@ -34,12 +34,17 @@ if env["platform"] == "windows" and not env.msvc:
     env.Append(LIBS=["mvsqlite"])
     if python_platform.system() == "Linux":
         try:
-            subprocess.check_call(["/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig"])
-            env.ParseConfig("/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig --libs --static libcrypto")
-            env.ParseConfig("/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig --libs --static libssl")
-        except:
-            print("Mvsqlite requires mingw64 pkg-config and the static libcrypto and libssl libraries to be installed from the mingw64-openssl-static package.")
-            sys.exit(255)
+            subprocess.check_call(["mingw64-pkg-config"])
+            env.ParseConfig("mingw64-pkg-config --libs --static libcrypto")
+            env.ParseConfig("mingw64-pkg-config --libs --static libssl")
+        except:                    
+            libcrypto = Path("/usr/x86_64-w64-mingw32/sys-root/mingw/lib/libcrypto.a")
+            libssl = Path("/usr/x86_64-w64-mingw32/sys-root/mingw/lib/libssl.a")
+            if libcrypto.is_file() and libssl.is_file():
+                env.Append(LIBPATH=["/usr/x86_64-w64-mingw32/sys-root/mingw/lib"])
+            else:
+                print("Mvsqlite requires mingw64 pkg-config and the static libcrypto and libssl libraries to be installed from the mingw64-openssl-static package.")
+                sys.exit(255)
         print("Found the mingw64 pkg-config and the static libcrypto and libssl libraries from the mingw64-openssl-static package.")
     env.Append(LIBS=["crypto", "ws2_32", "bcrypt", "userenv", "ntdll"])
 elif env["platform"] == "linuxbsd":
