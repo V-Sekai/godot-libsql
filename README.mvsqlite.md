@@ -7,8 +7,10 @@ REM scoop install llvm-mingw@20220323
 
 ```bat
 cmd
-scoop uninstall llvm-mingw
-scoop install llvm openssl-mingw
+scoop install openssl-mingw
+cd ~/scoop/apps/llvm-mingw/20220906/x86_64-w64-mingw32/lib
+ln -s libc++.a libgcc.a # https://www.reddit.com/r/rust/comments/jst1kk/building_rust_without_linking_against_libgcc/
+ln -s libunwind.a libgcc_eh.a
 cd thirdparty/sqlite3
 mingw32-make.exe
 ```

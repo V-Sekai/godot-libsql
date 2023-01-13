@@ -26,6 +26,7 @@ if env["platform"] == "windows" and not env.msvc:
     if python_platform.system() == "Linux":
         env.ParseConfig("mingw64-pkg-config --libs --static libcrypto")
         env.ParseConfig("mingw64-pkg-config --libs --static libssl")
+        
     subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
     # Bad because it has my user directory.
     env.Append(LIBPATH=["C:/Users/ernes/scoop/apps/openssl-mingw/current/lib64"])
