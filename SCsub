@@ -27,7 +27,6 @@ from pathlib import Path
 import sys
 
 if env["platform"] == "windows" and not env.msvc:
-    subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
     # Bad because it has my user directory.
     env.Append(LIBPATH=["C:/Users/ernes/scoop/apps/openssl-mingw/current/lib64"])
     env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-pc-windows-gnu/release/"])
@@ -46,7 +45,8 @@ if env["platform"] == "windows" and not env.msvc:
                 print("Mvsqlite requires mingw64 pkg-config and the static libcrypto and libssl libraries to be installed from the mingw64-openssl-static package.")
                 sys.exit(255)
         print("Found the mingw64 pkg-config and the static libcrypto and libssl libraries from the mingw64-openssl-static package.")
-    env.Append(LIBS=["crypto", "ws2_32", "bcrypt", "userenv", "ntdll"])
+    env.Append(LIBS=["crypto", "ws2_32", "bcrypt", "userenv", "ntdll"])    
+    subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
 elif env["platform"] == "linuxbsd":
     env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-unknown-linux-gnu/release"])
     subprocess.check_call(["cargo", "build", "--target", "x86_64-unknown-linux-gnu", "--release", "--package", "mvsqlite"])
