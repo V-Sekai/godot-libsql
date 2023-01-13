@@ -7,15 +7,15 @@ def can_build(env, platform):
         subprocess.check_call(["cargo", "--version"])
     except:
         return False
-    return True and not env.msvc
+    return not env.msvc
 
 def configure(env):
     pass
 
 def get_doc_classes():
     return [
-        "SQLite",
-        "SQLiteQuery",
+        "MVSQLite",
+        "MVSQLiteQuery",
     ]
 
 def get_doc_path():
