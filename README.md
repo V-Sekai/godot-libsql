@@ -24,13 +24,6 @@ mv mvsqlite godot/modules/
 
 See https://github.com/V-Sekai/godot-mvsqlite/blob/main/README.mvsqlite.md
 
-## Dependencies on Rocky Linux 8
-
-```bash
-sudo dnf config-manager --set-enabled powertools
-sudo yum install mingw32-pkg-config mingw64-openssl glibc-static
-```
-
 ## Example usage
 
 - [SQL Queries](https://github.com/godot-extended-libraries/godot-sqlite/blob/master/demo/SQLite/sql_queries.gd)
