@@ -6,7 +6,7 @@ import platform as python_platform
 def can_build(env, platform):
     if platform == "web":
         return False
-    if platform == "windows":
+    if platform == "windows" and python_platform.system() == "Linux":
         return False
     try:
         subprocess.check_call(["cargo", "--version"])
