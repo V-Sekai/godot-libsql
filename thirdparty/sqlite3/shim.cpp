@@ -1,7 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "pthread.h"
 #include <assert.h>
+
+#ifdef WINDOWS_ENABLED
+#include "pthread.h"
+#else
+#include <pthread.h>
+#endif
 
 #include "../../mvsqlite.h"
 #include "sqlite3.h"
