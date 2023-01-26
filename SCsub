@@ -34,7 +34,7 @@ if env["platform"] == "windows" and not env.msvc:
     if python_platform.system() == "Linux":
         try:
             env.ParseConfig("PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --static libcrypto")
-            env.ParseConfig("PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --static libz")
+            env.ParseConfig("PKG_CONFIG_LIBDIR=/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --static zlib")
         except:
             print("Mvsqlite requires mingw64 pkg-config and the static libcrypto and libssl libraries to be installed from the mingw64-openssl-static package.")
             sys.exit(255)
