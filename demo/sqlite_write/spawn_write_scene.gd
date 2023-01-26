@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS entity (
 	truncate_table = db.create_query(truncate_entities)
 	print(truncate_table.execute())
 	print(db.get_last_error_message())
-	for i in range(100):
+	for i in range(1000):
 		var node_3d : Node3D = Node3D.new()
 		var script = load("res://sqlite_write/sqlite_write_scene.gd")
 		node_3d.set_script(script)
