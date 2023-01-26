@@ -11,13 +11,13 @@ old_cwd = os.getcwd()
 env.Append(CPPDEFINES=[("SQLITE_ENABLE_RBU", 1)])
 env.Append(CPPDEFINES=[("SQLITE_USE_URI", 1)])
 env.Append(CPPDEFINES=["SQLITE_ENABLE_JSON1"])
+env.Append(CPPDEFINES=["LIBSQL_ENABLE_WASM_RUNTIME"])
 thirdparty_misc_dir = "thirdparty/sqlite3/"
 thirdparty_misc_sources = [
-    "shim.c",
+    "shim.cpp",
     "sqlite3.c",
 ]
 thirdparty_misc_sources = [thirdparty_misc_dir + file for file in thirdparty_misc_sources]
-env.add_source_files([], thirdparty_misc_sources)
 
 os.chdir("thirdparty/mvsqlite")
 import platform as python_platform
@@ -26,7 +26,22 @@ from pathlib import Path
 
 import sys
 
-if env["platform"] == "linuxbsd":
+if env["platform"] == "windows" and not env.msvc:
+    # Bad because it has my user directory.
+    env.Append(LIBPATH=["C:/Users/ernes/scoop/apps/openssl-mingw/current/lib64"])
+    env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-pc-windows-gnu/release/"])
+    env.Append(LIBS=["mvsqlite"])
+    if python_platform.system() == "Linux":
+        try:
+            subprocess.check_call(["/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig"])
+            env.ParseConfig("/usr/x86_64-w64-mingw32/sys-root/mingw/lib/pkgconfig --libs --static libcrypto")
+        except:
+            print("Mvsqlite requires mingw64 pkg-config and the static libcrypto and libssl libraries to be installed from the mingw64-openssl-static package.")
+            sys.exit(255)
+        print("Found the mingw64 pkg-config and the static libcrypto and libssl libraries from the mingw64-openssl-static package.")
+    env.Append(LIBS=["ws2_32", "bcrypt", "userenv", "ntdll"])    
+    subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
+elif env["platform"] == "linuxbsd":
     env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-unknown-linux-gnu/release"])
     subprocess.check_call(["cargo", "build", "--target", "x86_64-unknown-linux-gnu", "--release", "--package", "mvsqlite"])
     env.Append(LIBS=["mvsqlite", "pthread", "m", "dl"])
@@ -35,13 +50,15 @@ elif env["platform"] == "web":
     subprocess.check_call(["cargo", "build", "--target", "wasm32-unknown-emscripten", "--release", "--package", "mvsqlite"])
     env.Append(LIBS=["mvsqlite", "pthread", "m", "dl"])
 
-env_mvsqlite = env.Clone()
-env_mvsqlite.Append(CPPPATH=["thirdparty/sqlite3"])
-env_mvsqlite.Append(CPPPATH=["#modules/mvsqlite"])
+env.Append(CPPPATH=["thirdparty/sqlite3"])
+env.Append(CPPPATH=["thirdparty"])
+env.Append(CPPPATH=["#modules/mvsqlite"])
 
 os.chdir(old_cwd)
 
 module_obj = []
 
-env_mvsqlite.add_source_files(module_obj, "*.cpp")
+env.add_source_files(module_obj, "*.cpp")
+env.add_source_files(module_obj, thirdparty_misc_sources)
+
 env.modules_sources += module_obj

@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "../../mvsqlite.h"
+#include "sqlite3.h"
 
 // https://stackoverflow.com/questions/18298280/how-to-declare-a-variable-as-thread-local-portably
 #ifndef thread_local
@@ -72,7 +73,7 @@ int sqlite3_open(
     const char *filename,   /* Database filename (UTF-8) */
     sqlite3 **ppDb          /* OUT: SQLite db handle */
 ) {
-    return sqlite3_open_v2(filename, ppDb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+    return real_sqlite3_open_v2(filename, ppDb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 }
 
 static thread_local int in_sqlite3_step = 0;

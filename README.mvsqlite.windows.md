@@ -8,6 +8,10 @@ REM scoop install llvm-mingw@20220323
 ```bat
 cmd
 scoop install openssl-mingw
+scoop install rustup
+rustup update
+rustup target add x86_64-pc-windows-gnu
+rustup target add x86_64-pc-windows-msvc
 cd ~/scoop/apps/llvm-mingw/20220906/x86_64-w64-mingw32/lib
 ln -s libc++.a libgcc.a # https://www.reddit.com/r/rust/comments/jst1kk/building_rust_without_linking_against_libgcc/
 ln -s libunwind.a libgcc_eh.a

@@ -202,7 +202,7 @@ bool MVSQLite::open(String path) {
   if (!path.strip_edges().length()) {
     return false;
   }
-  init_mvsqlite();
+  // We renamed sqlite3_open_v2 to real_sqlite3_open_v2
   int result = sqlite3_open_v2(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
   if (result != SQLITE_OK) {
     print_error("Cannot open the database.");
@@ -210,7 +210,6 @@ bool MVSQLite::open(String path) {
     db = nullptr;
     return false;
   }
-  init_mvsqlite_connection(db);
   return true;
 }
 
