@@ -213,6 +213,29 @@ bool MVSQLite::open(String path) {
   return true;
 }
 
+/*
+        Open a database file.
+        If this is running outside of the editor, databases under res:// are
+   assumed to be packed.
+        @param path The database resource path.
+        @return status
+*/
+bool MVSQLite::open_cluster(String path) {
+  if (!path.strip_edges().length()) {
+    return false;
+  }
+  // We renamed sqlite3_open_v2 to real_sqlite3_open_v2
+  int result = sqlite3_open_v2_cluster(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+  if (result != SQLITE_OK) {
+    print_error("Cannot open the database.");
+    sqlite3_close_v2(db);
+    db = nullptr;
+    return false;
+  }
+  return true;
+}
+
+
 void MVSQLite::close() {
   // Finalize all queries before close the DB.
   // Reverse order because I need to remove the not available queries.
@@ -346,6 +369,7 @@ MVSQLite::~MVSQLite() {
 void MVSQLite::_bind_methods() {
   ClassDB::bind_method(D_METHOD("get_last_error_message"), &MVSQLite::get_last_error_message);
   ClassDB::bind_method(D_METHOD("open", "path"), &MVSQLite::open);
+  ClassDB::bind_method(D_METHOD("open_cluster", "path"), &MVSQLite::open_cluster);
   ClassDB::bind_method(D_METHOD("close"), &MVSQLite::close);
   ClassDB::bind_method(D_METHOD("create_query", "statement"),
                        &MVSQLite::create_query);

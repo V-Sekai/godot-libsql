@@ -5,7 +5,7 @@ var truncate_table : MVSQLiteQuery
 
 func _ready():
 	var db : MVSQLite = MVSQLite.new();
-	if (!db.open("mvsqlite")):
+	if (!db.open_cluster("mvsqlite")):
 		print("Failed opening database.");
 		return;
 	var create_entity_table : String = """

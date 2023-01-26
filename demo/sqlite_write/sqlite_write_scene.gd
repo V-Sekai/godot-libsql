@@ -7,7 +7,7 @@ var uuid : String
 
 func _ready():
 	db = MVSQLite.new();
-	if (!db.open("mvsqlite")):
+	if (!db.open_cluster("mvsqlite")):
 		print("Failed opening database.");
 		return;
 	var select_uuid : String = """

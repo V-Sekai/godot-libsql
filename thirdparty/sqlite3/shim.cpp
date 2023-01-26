@@ -60,6 +60,15 @@ int sqlite3_open_v2(
     int flags,              /* Flags */
     const char *zVfs        /* Name of VFS module to use */
 ) {
+    return real_sqlite3_open_v2(filename, ppDb, flags, zVfs);
+}
+
+int sqlite3_open_v2_cluster(
+    const char *filename,   /* Database filename (UTF-8) */
+    sqlite3 **ppDb,            /* OUT: SQLite db handle */
+    int flags,              /* Flags */
+    const char *zVfs        /* Name of VFS module to use */
+) {
     int ret;
     bootstrap();
     ret = real_sqlite3_open_v2(filename, ppDb, flags, zVfs);

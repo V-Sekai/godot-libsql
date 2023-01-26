@@ -33,6 +33,13 @@ int sqlite3_open_v2(
     const char *zVfs        /* Name of VFS module to use */
 );
 
+int sqlite3_open_v2_cluster(
+    const char *filename,   /* Database filename (UTF-8) */
+    sqlite3 **ppDb,            /* OUT: MVSQLite db handle */
+    int flags,              /* Flags */
+    const char *zVfs        /* Name of VFS module to use */
+);
+
 int sqlite3_open(
     const char *filename,   /* Database filename (UTF-8) */
     sqlite3 **ppDb          /* OUT: MVSQLite db handle */
@@ -133,6 +140,8 @@ public:
 
   // methods
   bool open(String path);
+  bool open_cluster(String path);
+
   void close();
 
   /// Compiles the query into bytecode and returns an handle to it for a faster
