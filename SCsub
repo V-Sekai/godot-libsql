@@ -33,8 +33,8 @@ if env["platform"] == "windows" and not env.msvc:
     env.Append(LIBS=["mvsqlite"])
     if python_platform.system() == "Linux":
         try:
-            subprocess.check_call(["mingw32-pkg-config"])
-            env.ParseConfig("mingw32-pkg-config --libs --static libcrypto")
+            subprocess.check_call(["i686-w64-mingw32-pkg-config"])
+            env.ParseConfig("i686-w64-mingw32-pkg-config --libs --static libcrypto")
         except:
             print("Mvsqlite requires mingw64 pkg-config and the static libcrypto and libssl libraries to be installed from the mingw64-openssl-static package.")
             sys.exit(255)
