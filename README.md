@@ -60,6 +60,10 @@ make sqlite3.c
 scoop install Dependencies 
 ```
 
+## Creating wasm programs
+
+https://bindgen.libsql.org/
+
 ## Attribution
 
 This engine module for Godot is based on gdsqlite-native by Khairul Hidayat in 2017.

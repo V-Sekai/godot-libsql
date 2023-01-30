@@ -64,7 +64,5 @@ CREATE FUNCTION fibonacci LANGUAGE wasm AS '(module
 	"""
 	var result : LibsqlQuery = db.create_query(query)
 	print(result.execute())
-	print(db.get_last_error_message())
 	result = db.create_query("SELECT fibonacci(36)")
 	print(result.execute())
-	print(db.get_last_error_message())
