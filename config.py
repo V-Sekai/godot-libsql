@@ -9,7 +9,7 @@ def can_build(env, platform):
     if platform == "windows" and python_platform.system() == "Linux":
         return False
     try:
-        subprocess.check_call(["cargo", "--version"])
+        subprocess.check_call(["cargo", "--version", "--offline"])
     except:
         return False
     return True
