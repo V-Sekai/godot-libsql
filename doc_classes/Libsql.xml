@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<class name="MVSqlite" inherits="RefCounted" version="4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+<class name="Libsql" inherits="RefCounted" version="4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
 	<brief_description>
-		Wrapper class for MVSqlite databases.
+		Wrapper class for Libsql databases.
 	</brief_description>
 	<description>
-		A wrapper class that lets you perform SQL statements on an MVSqlite database file.
+		A wrapper class that lets you perform SQL statements on an Libsql database file.
 		For queries that involve arbitrary user input, you should use methods that end in [code]*_with_args[/code], as these protect against SQL injection.
 	</description>
 	<tutorials>

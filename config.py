@@ -17,8 +17,8 @@ def configure(env):
 
 def get_doc_classes():
     return [
-        "MVSQLite",
-        "MVSQLiteQuery",
+        "Libsql",
+        "LibsqlQuery",
     ]
 
 def get_doc_path():
