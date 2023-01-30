@@ -22,6 +22,8 @@ jobs:
           repository: godotengine/godot
           ref: master
 
+      - uses: actions-rs/install@v0.1
+
       # Clone our module under the correct directory
       - uses: actions/checkout@v2
         with:
