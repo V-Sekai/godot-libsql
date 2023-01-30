@@ -25,7 +25,8 @@ jobs:
           repository: v-sekai/godot
           ref: groups-4.x
 
-      - uses: actions-rs/install@v0.1
+      - name: Install latest nightly
+        uses: actions-rs/toolchain@v1
 
       # Clone our module under the correct directory
       - uses: actions/checkout@v2
