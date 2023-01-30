@@ -1,1 +1,0 @@
-degit https://github.com/V-Sekai/v-sekai-mvsqlite.git thirdparty/mvsqlite
