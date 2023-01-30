@@ -4,8 +4,8 @@
 
 ## Dependencies
 
-* rust
-* https://docs.godotengine.org/en/latest/development/compiling/index.html
+- rust
+- https://docs.godotengine.org/en/latest/development/compiling/index.html
 
 ## Git Installation
 
@@ -57,7 +57,7 @@ make sqlite3.c
 ## Debugging library loading
 
 ```powershell
-scoop install Dependencies 
+scoop install Dependencies
 ```
 
 ## Creating wasm programs

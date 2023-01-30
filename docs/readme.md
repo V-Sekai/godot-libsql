@@ -2,7 +2,7 @@
 
 What is mvsqlite?
 
-> mvSQLite is the open-source, SQLite-compatible distributed database built on FoundationDB. 
+> mvSQLite is the open-source, SQLite-compatible distributed database built on FoundationDB.
 
 ### Keep status quo client deployment story:
 
@@ -14,10 +14,10 @@ What is mvsqlite?
 
 1. Download a single zip-like archive
 1. Unpack into components.
-    1. the godot engine templates (Windows, Linux, macOS, and others) 
-    2. the V-Sekai Uro phoenix package 
-    3. the Foundationdb server 
-    4. the mvsqlite mvstore Foundationdb host
+   1. the godot engine templates (Windows, Linux, macOS, and others)
+   2. the V-Sekai Uro phoenix package
+   3. the Foundationdb server
+   4. the mvsqlite mvstore Foundationdb host
 1. Docker is not required.
 
 ## Server to Client simulation
@@ -42,7 +42,7 @@ Can store any Godot Engine variant.
 ### Why mvsqlite and Foundationdb?:
 
 1. Foundationdb is Apache licensed
-1. Cockroachdb (our current storage component) is BSL and is not open-source. 
+1. Cockroachdb (our current storage component) is BSL and is not open-source.
 1. mvsqlite provides a SQL layer to Foundationdb
 1. mvsqlite supports 100 server processes with reasonable scaling
 1. FoundationDB supports 500 server processes with reasonable scaling
@@ -67,12 +67,12 @@ I am on server 1 and I want to teleport to server 2.
 
 ### List of ideas
 
-| Who | Idea | Evaluation |
-|---|---|---|
-| Fire | World persistence | Definitely |
-| Fire | Frame proxying | Bad performance |
-| Fire | Inventory | Can save any Variant or ByteArray |
-| 74hc595 | Movie mode record and replay player actions | Movies! Yeah! |
+| Who     | Idea                                        | Evaluation                        |
+| ------- | ------------------------------------------- | --------------------------------- |
+| Fire    | World persistence                           | Definitely                        |
+| Fire    | Frame proxying                              | Bad performance                   |
+| Fire    | Inventory                                   | Can save any Variant or ByteArray |
+| 74hc595 | Movie mode record and replay player actions | Movies! Yeah!                     |
 
 ### References
 
