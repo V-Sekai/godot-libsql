@@ -133,7 +133,7 @@ jobs:
         env:
           SCONS_CACHE: /.scons_cache/
         run: |
-          scons -j2 verbose=yes warnings=all werror=yes platform=windows tools=no tests=no target=release
+          scons -j2 verbose=yes warnings=all werror=yes platform=windows tools=no tests=no target=template_release
 
       # TODO Such tests are able to run from Godot 4.0 only
       # Execute unit tests for the editor
