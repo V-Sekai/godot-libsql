@@ -23,7 +23,7 @@ jobs:
           ref: master
 
       - uses: dtolnay/rust-toolchain@stable
-      
+
       # Clone our module under the correct directory
       - uses: actions/checkout@v2
         with:
