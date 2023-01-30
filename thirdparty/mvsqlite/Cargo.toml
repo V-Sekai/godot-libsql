@@ -1,9 +1,0 @@
-[workspace]
-members = [
-    "mvsqlite",
-    "mvsqlite-fuse",
-    "mvstore",
-    "mvstore-stress",
-    "mvclient",
-    "mvfs",
-]

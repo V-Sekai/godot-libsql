@@ -1,13 +1,14 @@
 #include "mvsqlite.h"
+
 #include "core/core_bind.h"
 #include "core/os/os.h"
 #include "editor/project_settings_editor.h"
 
-#include "thirdparty/sqlite3/sqlite3.h"
+#include "thirdparty/libsql/sqlite3.h"
 
 #define _GNU_SOURCE
 
-Array mvsqlite_fast_parse_row(sqlite3_stmt *stmt) {
+Array libsql_fast_parse_row(sqlite3_stmt *stmt) {
   Array result;
 
   // Get column count
@@ -58,24 +59,24 @@ Array mvsqlite_fast_parse_row(sqlite3_stmt *stmt) {
   return result;
 }
 
-MVSQLiteQuery::MVSQLiteQuery() {}
+LibsqlQuery::LibsqlQuery() {}
 
-MVSQLiteQuery::~MVSQLiteQuery() { finalize(); }
+LibsqlQuery::~LibsqlQuery() { finalize(); }
 
-void MVSQLiteQuery::init(MVSQLite *p_db, const String &p_query) {
+void LibsqlQuery::init(Ref<Libsql> p_db, const String &p_query) {
   db = p_db;
   query = p_query;
   stmt = nullptr;
 }
 
-bool MVSQLiteQuery::is_ready() const { return stmt != nullptr; }
+bool LibsqlQuery::is_ready() const { return stmt != nullptr; }
 
-String MVSQLiteQuery::get_last_error_message() const {
+String LibsqlQuery::get_last_error_message() const {
   ERR_FAIL_COND_V(db == nullptr, "Database is undefined.");
   return db->get_last_error_message();
 }
 
-Variant MVSQLiteQuery::execute(const Array p_args) {
+Variant LibsqlQuery::execute(const Array p_args) {
   if (is_ready() == false) {
     ERR_FAIL_COND_V(prepare() == false, Variant());
   }
@@ -83,12 +84,12 @@ Variant MVSQLiteQuery::execute(const Array p_args) {
   // At this point stmt can't be null.
   CRASH_COND(stmt == nullptr);
 
+  int autocommit = 0;
   // Error occurred during argument binding
-  if (!MVSQLite::bind_args(stmt, p_args)) {
+  if (!Libsql::bind_args(stmt, p_args)) {
     ERR_FAIL_V_MSG(Variant(),
                    "Error during arguments set: " + get_last_error_message());
   }
-  int autocommit = 0;
   // Execute the query.
   Array result;
   while (true) {
@@ -96,9 +97,7 @@ Variant MVSQLiteQuery::execute(const Array p_args) {
     const int res = sqlite3_step(stmt);
     if (res == SQLITE_ROW) {
       // Collect the result.
-      result.append(mvsqlite_fast_parse_row(stmt));
-    } else if (res == SQLITE_BUSY && autocommit) {
-      mvsqlite_autocommit_backoff(db->db);
+      result.append(libsql_fast_parse_row(stmt));
     } else if (res == SQLITE_DONE) {
       // Nothing more to do.
       break;
@@ -118,7 +117,7 @@ Variant MVSQLiteQuery::execute(const Array p_args) {
   return result;
 }
 
-Variant MVSQLiteQuery::batch_execute(Array p_rows) {
+Variant LibsqlQuery::batch_execute(Array p_rows) {
   Array res;
   for (int i = 0; i < p_rows.size(); i += 1) {
     ERR_FAIL_COND_V_MSG(p_rows[i].get_type() != Variant::ARRAY, Variant(),
@@ -133,7 +132,7 @@ Variant MVSQLiteQuery::batch_execute(Array p_rows) {
   return res;
 }
 
-Array MVSQLiteQuery::get_columns() {
+Array LibsqlQuery::get_columns() {
   if (is_ready() == false) {
     ERR_FAIL_COND_V(prepare() == false, Array());
   }
@@ -155,7 +154,7 @@ Array MVSQLiteQuery::get_columns() {
   return res;
 }
 
-bool MVSQLiteQuery::prepare() {
+bool LibsqlQuery::prepare() {
   ERR_FAIL_COND_V(stmt != nullptr, false);
   ERR_FAIL_COND_V(db == nullptr, false);
   ERR_FAIL_COND_V(query == "", false);
@@ -171,24 +170,24 @@ bool MVSQLiteQuery::prepare() {
   return true;
 }
 
-void MVSQLiteQuery::finalize() {
+void LibsqlQuery::finalize() {
   if (stmt) {
     sqlite3_finalize(stmt);
     stmt = nullptr;
   }
 }
 
-void MVSQLiteQuery::_bind_methods() {
+void LibsqlQuery::_bind_methods() {
   ClassDB::bind_method(D_METHOD("get_last_error_message"),
-                       &MVSQLiteQuery::get_last_error_message);
+                       &LibsqlQuery::get_last_error_message);
   ClassDB::bind_method(D_METHOD("execute", "arguments"),
-                       &MVSQLiteQuery::execute, DEFVAL(Array()));
+                       &LibsqlQuery::execute, DEFVAL(Array()));
   ClassDB::bind_method(D_METHOD("batch_execute", "rows"),
-                       &MVSQLiteQuery::batch_execute);
-  ClassDB::bind_method(D_METHOD("get_columns"), &MVSQLiteQuery::get_columns);
+                       &LibsqlQuery::batch_execute);
+  ClassDB::bind_method(D_METHOD("get_columns"), &LibsqlQuery::get_columns);
 }
 
-MVSQLite::MVSQLite() {
+Libsql::Libsql() {
   db = nullptr;
 }
 /*
@@ -198,12 +197,18 @@ MVSQLite::MVSQLite() {
         @param path The database resource path.
         @return status
 */
-bool MVSQLite::open(String path) {
+bool Libsql::open(String path) {
   if (!path.strip_edges().length()) {
     return false;
   }
-  // We renamed sqlite3_open_v2 to real_sqlite3_open_v2
-  int result = sqlite3_open_v2(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+  int result = libsql_open(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr, nullptr);
+  if (result != SQLITE_OK) {
+    print_error("Cannot open the database.");
+    sqlite3_close_v2(db);
+    db = nullptr;
+    return false;
+  }
+  result = libsql_try_initialize_wasm_func_table(db);
   if (result != SQLITE_OK) {
     print_error("Cannot open the database.");
     sqlite3_close_v2(db);
@@ -213,35 +218,12 @@ bool MVSQLite::open(String path) {
   return true;
 }
 
-/*
-        Open a database file.
-        If this is running outside of the editor, databases under res:// are
-   assumed to be packed.
-        @param path The database resource path.
-        @return status
-*/
-bool MVSQLite::open_cluster(String path) {
-  if (!path.strip_edges().length()) {
-    return false;
-  }
-  // We renamed sqlite3_open_v2 to real_sqlite3_open_v2
-  int result = sqlite3_open_v2_cluster(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-  if (result != SQLITE_OK) {
-    print_error("Cannot open the database.");
-    sqlite3_close_v2(db);
-    db = nullptr;
-    return false;
-  }
-  return true;
-}
-
-
-void MVSQLite::close() {
+void Libsql::close() {
   // Finalize all queries before close the DB.
   // Reverse order because I need to remove the not available queries.
   for (uint32_t i = queries.size(); i > 0; i -= 1) {
-    MVSQLiteQuery *query =
-        Object::cast_to<MVSQLiteQuery>(queries[i - 1]->get_ref());
+    LibsqlQuery *query =
+        Object::cast_to<LibsqlQuery>(queries[i - 1]->get_ref());
     if (query != nullptr) {
       query->finalize();
     } else {
@@ -260,7 +242,7 @@ void MVSQLite::close() {
   }
 }
 
-sqlite3_stmt *MVSQLite::prepare(const char *query) {
+sqlite3_stmt *Libsql::prepare(const char *query) {
   // Get database pointer
   sqlite3 *dbs = get_handler();
 
@@ -277,17 +259,17 @@ sqlite3_stmt *MVSQLite::prepare(const char *query) {
   return stmt;
 }
 
-bool MVSQLite::bind_args(sqlite3_stmt *stmt, Array args) {
+bool Libsql::bind_args(sqlite3_stmt *stmt, Array args) {
   // Check parameter count
   int param_count = sqlite3_bind_parameter_count(stmt);
   if (param_count != args.size()) {
-    print_error("MVSQLiteQuery failed; expected " + itos(param_count) +
+    print_error("LibsqlQuery failed; expected " + itos(param_count) +
                 " arguments, got " + itos(args.size()));
     return false;
   }
 
   /**
-   * MVSQLite data types:
+   * libsql data types:
    * - NULL
    * - INTEGER (signed, max 8 bytes)
    * - REAL (stored as a double-precision float)
@@ -319,7 +301,7 @@ bool MVSQLite::bind_args(sqlite3_stmt *stmt, Array args) {
       break;
     default:
       print_error(
-          "MVSQLite was passed unhandled Variant with TYPE_* enum " +
+          "Libsql was passed unhandled Variant with TYPE_* enum " +
           itos(args[i].get_type()) +
           ". Please serialize your object into a String or a PoolByteArray.\n");
       return false;
@@ -327,8 +309,8 @@ bool MVSQLite::bind_args(sqlite3_stmt *stmt, Array args) {
 
     if (retcode != SQLITE_OK) {
       print_error(
-          "MVSQLiteQuery failed, an error occured while binding argument" +
-          itos(i + 1) + " of " + itos(args.size()) + " (MVSQLite errcode " +
+          "LibsqlQuery failed, an error occured while binding argument" +
+          itos(i + 1) + " of " + itos(args.size()) + " (libsql errcode " +
           itos(retcode) + ")");
       return false;
     }
@@ -337,10 +319,10 @@ bool MVSQLite::bind_args(sqlite3_stmt *stmt, Array args) {
   return true;
 }
 
-Ref<MVSQLiteQuery> MVSQLite::create_query(String p_query) {
-  Ref<MVSQLiteQuery> query;
+Ref<LibsqlQuery> Libsql::create_query(String p_query) {
+  Ref<LibsqlQuery> query;
   query.instantiate();
-  query->init(this, p_query);
+  query->init(Ref<Libsql>(this), p_query);
 
   WeakRef *wr = memnew(WeakRef);
   wr->set_obj(query.ptr());
@@ -349,28 +331,27 @@ Ref<MVSQLiteQuery> MVSQLite::create_query(String p_query) {
   return query;
 }
 
-String MVSQLite::get_last_error_message() const {
+String Libsql::get_last_error_message() const {
   return sqlite3_errmsg(get_handler());
 }
 
-MVSQLite::~MVSQLite() {
+Libsql::~Libsql() {
   // Close database
   close();
   // Make sure to invalidate all associated queries.
   for (uint32_t i = 0; i < queries.size(); i += 1) {
-    MVSQLiteQuery *query =
-        Object::cast_to<MVSQLiteQuery>(queries[i]->get_ref());
+    LibsqlQuery *query =
+        Object::cast_to<LibsqlQuery>(queries[i]->get_ref());
     if (query != nullptr) {
       query->init(nullptr, "");
     }
   }
 }
 
-void MVSQLite::_bind_methods() {
-  ClassDB::bind_method(D_METHOD("get_last_error_message"), &MVSQLite::get_last_error_message);
-  ClassDB::bind_method(D_METHOD("open", "path"), &MVSQLite::open);
-  ClassDB::bind_method(D_METHOD("open_cluster", "path"), &MVSQLite::open_cluster);
-  ClassDB::bind_method(D_METHOD("close"), &MVSQLite::close);
+void Libsql::_bind_methods() {
+  ClassDB::bind_method(D_METHOD("get_last_error_message"), &Libsql::get_last_error_message);
+  ClassDB::bind_method(D_METHOD("open", "path"), &Libsql::open);
+  ClassDB::bind_method(D_METHOD("close"), &Libsql::close);
   ClassDB::bind_method(D_METHOD("create_query", "statement"),
-                       &MVSQLite::create_query);
+                       &Libsql::create_query);
 }

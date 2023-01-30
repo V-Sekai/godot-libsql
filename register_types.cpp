@@ -7,8 +7,8 @@ void initialize_mvsqlite_module(ModuleInitializationLevel p_level) {
   if (p_level != MODULE_INITIALIZATION_LEVEL_SERVERS) {
     return;
   }
-  ClassDB::register_class<MVSQLite>();
-  ClassDB::register_class<MVSQLiteQuery>();
+  ClassDB::register_class<Libsql>();
+  ClassDB::register_class<LibsqlQuery>();
 }
 
 void uninitialize_mvsqlite_module(ModuleInitializationLevel p_level) {

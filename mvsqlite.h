@@ -1,56 +1,20 @@
-#ifndef MVSQLITE_H
-#define MVSQLITE_H
+#ifndef Libsql_H
+#define Libsql_H
 
 #include "core/object/ref_counted.h"
 #include "core/templates/local_vector.h"
 
-#include "thirdparty/sqlite3/sqlite3.h"
+#include "thirdparty/libsql/sqlite3.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 
-extern "C" {
-  void init_mvsqlite(void);
-  void init_mvsqlite_connection(sqlite3 *db);
-  void mvsqlite_autocommit_backoff(sqlite3 *db);
-}
+class Libsql;
 
-typedef int (*sqlite3_initialize_fn)(void);
-typedef int (*sqlite3_open_v2_fn)(
-    const char *filename,   /* Database filename (UTF-8) */
-    sqlite3 **ppDb,            /* OUT: MVSQLite db handle */
-    int flags,              /* Flags */
-    const char *zVfs        /* Name of VFS module to use */
-);
-typedef int (*sqlite3_step_fn)(sqlite3_stmt *pStmt);
+class LibsqlQuery : public RefCounted {
+  GDCLASS(LibsqlQuery, RefCounted);
 
-int sqlite3_step(sqlite3_stmt *pStmt);
-
-int sqlite3_open_v2(
-    const char *filename,   /* Database filename (UTF-8) */
-    sqlite3 **ppDb,            /* OUT: MVSQLite db handle */
-    int flags,              /* Flags */
-    const char *zVfs        /* Name of VFS module to use */
-);
-
-int sqlite3_open_v2_cluster(
-    const char *filename,   /* Database filename (UTF-8) */
-    sqlite3 **ppDb,            /* OUT: MVSQLite db handle */
-    int flags,              /* Flags */
-    const char *zVfs        /* Name of VFS module to use */
-);
-
-int sqlite3_open(
-    const char *filename,   /* Database filename (UTF-8) */
-    sqlite3 **ppDb          /* OUT: MVSQLite db handle */
-);
-
-class MVSQLite;
-
-class MVSQLiteQuery : public RefCounted {
-  GDCLASS(MVSQLiteQuery, RefCounted);
-
-  MVSQLite *db = nullptr;
+  Ref<Libsql> db;
   sqlite3_stmt *stmt = nullptr;
   String query;
 
@@ -58,10 +22,10 @@ protected:
   static void _bind_methods();
 
 public:
-  MVSQLiteQuery();
-  ~MVSQLiteQuery();
+  LibsqlQuery();
+  ~LibsqlQuery();
 
-  void init(MVSQLite *p_db, const String &p_query);
+  void init(Ref<Libsql> p_db, const String &p_query);
 
   bool is_ready() const;
 
@@ -110,10 +74,10 @@ private:
   bool prepare();
 };
 
-class MVSQLite : public RefCounted {
-  GDCLASS(MVSQLite, RefCounted);
+class Libsql : public RefCounted {
+  GDCLASS(Libsql, RefCounted);
 
-  friend class MVSQLiteQuery;
+  friend class LibsqlQuery;
 
 private:
   // sqlite handler
@@ -135,8 +99,8 @@ protected:
 public:
   enum { RESULT_BOTH = 0, RESULT_NUM, RESULT_ASSOC };
 
-  MVSQLite();
-  ~MVSQLite();
+  Libsql();
+  ~Libsql();
 
   // methods
   bool open(String path);
@@ -148,7 +112,7 @@ public:
   /// execution.
   /// Note: you can create the query at any time, but you can execute it only
   /// when the DB is open.
-  Ref<MVSQLiteQuery> create_query(String p_query);
+  Ref<LibsqlQuery> create_query(String p_query);
   String get_last_error_message() const;
 };
-#endif // MVSQLITE_H
+#endif // Libsql_H
