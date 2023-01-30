@@ -25,6 +25,8 @@ jobs:
           repository: v-sekai/godot
           ref: groups-4.x
 
+      - uses: dtolnay/rust-toolchain@stable
+      
       # Clone our module under the correct directory
       - uses: actions/checkout@v2
         with:
