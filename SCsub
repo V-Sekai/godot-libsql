@@ -48,6 +48,9 @@ os.chdir(old_cwd)
 module_obj = []
 
 env.add_source_files(module_obj, "*.cpp")
-env.add_source_files(module_obj, thirdparty_misc_sources)
+
+env_thirdparty = env.Clone()
+env_thirdparty.disable_warnings()
+env_thirdparty.add_source_files(module_obj, thirdparty_misc_sources)
 
 env.modules_sources += module_obj
