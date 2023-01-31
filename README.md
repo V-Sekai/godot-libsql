@@ -2,8 +2,6 @@
 
 libsql wrapper for Godot Engine with wasm text scripts.
 
-Currently renaming to godot-libsql.
-
 ## Dependencies
 
 - rust
