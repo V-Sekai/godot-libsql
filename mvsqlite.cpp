@@ -6,7 +6,6 @@
 
 #include "thirdparty/libsql/sqlite3.h"
 
-#define _GNU_SOURCE
 SQLITE_API void libsql_run_wasm(struct libsql_wasm_udf_api *api, sqlite3_context *context,
 		libsql_wasm_engine_t *engine, libsql_wasm_module_t *module, const char *func_name, int argc, sqlite3_value **argv);
 
@@ -86,7 +85,6 @@ Variant LibsqlQuery::execute(const Array p_args) {
 	// At this point stmt can't be null.
 	CRASH_COND(stmt == nullptr);
 
-	int autocommit = 0;
 	// Error occurred during argument binding
 	if (!Libsql::bind_args(stmt, p_args)) {
 		ERR_FAIL_V_MSG(Variant(),
@@ -95,7 +93,7 @@ Variant LibsqlQuery::execute(const Array p_args) {
 	// Execute the query.
 	Array result;
 	while (true) {
-		autocommit = sqlite3_get_autocommit(db->db);
+		sqlite3_get_autocommit(db->db);
 		const int res = sqlite3_step(stmt);
 		if (res == SQLITE_ROW) {
 			// Collect the result.
