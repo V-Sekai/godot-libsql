@@ -1,7 +1,7 @@
 #include "register_types.h"
 
 #include "core/object/class_db.h"
-#include "mvsqlite.h"
+#include "libsql.h"
 
 void initialize_libsql_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SERVERS) {
