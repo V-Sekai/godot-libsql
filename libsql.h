@@ -1,5 +1,5 @@
-#ifndef Libsql_H
-#define Libsql_H
+#ifndef LIBSQL_H
+#define LIBSQL_H
 
 #include "core/object/ref_counted.h"
 #include "core/templates/local_vector.h"
@@ -119,4 +119,4 @@ public:
 	Ref<LibsqlQuery> create_query(String p_query);
 	String get_last_error_message() const;
 };
-#endif // Libsql_H
+#endif // LIBSQL_H
