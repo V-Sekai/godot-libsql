@@ -1,25 +1,14 @@
-# godot-mvsqlite
+# godot-libsql
 
-[mvsqlite](https://github.com/losfair/mvsqlite) wrapper for Godot Engine
+libsql wrapper for Godot Engine with wasm text scripts.
+
+Currently renaming to godot-libsql.
 
 ## Dependencies
 
 - rust
 - https://docs.godotengine.org/en/latest/development/compiling/index.html
 
-## Git Installation
-
-Download using git.
-
-```
-git clone https://github.com/V-Sekai/godot-mvsqlite mvsqlite
-```
-
-Move to the modules folder inside of the Godot Engine source.
-
-```
-mv mvsqlite godot/modules/
-```
 
 ## Example usage
 
@@ -27,15 +16,15 @@ mv mvsqlite godot/modules/
 - [Game Highscore](https://github.com/godot-extended-libraries/godot-sqlite/blob/master/demo/SQLite/game_highscore.gd)
 - [Item Libraries](https://github.com/godot-extended-libraries/godot-sqlite/blob/master/demo/SQLite/item_database.gd)
 
-# mvsqlite for Windows
+## Creating wasm programs
 
-```bat
-REM for windows
-REM scoop install llvm-mingw@20220323
-```
+https://bindgen.libsql.org/
+
+## Installation for Windows.
 
 ```bat
 cmd
+scoop install llvm-mingw@20220323
 scoop install rustup
 rustup update
 rustup target add x86_64-pc-windows-gnu
@@ -59,10 +48,6 @@ make sqlite3.c
 ```powershell
 scoop install Dependencies
 ```
-
-## Creating wasm programs
-
-https://bindgen.libsql.org/
 
 ## Attribution
 
