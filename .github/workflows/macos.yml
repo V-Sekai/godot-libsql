@@ -24,6 +24,13 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
+      - name: Setup python and scons
+        uses: ./.github/actions/godot-deps
+
+      - name: Setup Vulkan SDK
+        run: |
+          sh misc/scripts/install_vulkan_sdk_macos.sh
+
       # Clone our module under the correct directory
       - uses: actions/checkout@v2
         with:
