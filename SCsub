@@ -39,7 +39,7 @@ elif env["platform"] == "macos":
     subprocess.check_call(["cargo", "build", "--target", "x86_64-apple-darwin", "--release"])
     env.Append(LIBS=["libwblibsql.a", "pthread", "m", "dl"])
 elif env["platform"] == "web":
-    env.Append(LIBPATH=[src_folder_path + "/thirdparty/libsql/src/rust/wasmtime-bindings/target/x86_64-unknown-linux-gnu/release"])
+    env.Append(LIBPATH=[src_folder_path + "/thirdparty/libsql/src/rust/wasmtime-bindings/target/wasm32-unknown-emscripten/release"])
     subprocess.check_call(["cargo", "build", "--target", "wasm32-unknown-emscripten", "--release"])
     env.Append(LIBS=["libwblibsql.a","pthread", "m", "dl"])
 
