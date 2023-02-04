@@ -5,6 +5,8 @@ import platform as python_platform
 
 
 def can_build(env, platform):
+    if env.msvc:
+        return False
     if platform == "web":
         return False
     try:
