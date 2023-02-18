@@ -6,9 +6,6 @@
 
 #include "thirdparty/libsql/sqlite3.h"
 
-SQLITE_API void libsql_run_wasm(struct libsql_wasm_udf_api *api, sqlite3_context *context,
-		libsql_wasm_engine_t *engine, libsql_wasm_module_t *module, const char *func_name, int argc, sqlite3_value **argv);
-
 Array libsql_fast_parse_row(sqlite3_stmt *stmt) {
 	Array result;
 
@@ -200,13 +197,6 @@ bool Libsql::open(String path) {
 		return false;
 	}
 	int result = libsql_open(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr, nullptr);
-	if (result != SQLITE_OK) {
-		print_error("Cannot open the database.");
-		sqlite3_close_v2(db);
-		db = nullptr;
-		return false;
-	}
-	result = libsql_try_initialize_wasm_func_table(db);
 	if (result != SQLITE_OK) {
 		print_error("Cannot open the database.");
 		sqlite3_close_v2(db);
