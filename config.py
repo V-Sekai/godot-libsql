@@ -9,6 +9,10 @@ def can_build(env, platform):
         return False
     if platform == "web":
         return False
+    try:
+        subprocess.check_call(["cargo", "--version"])
+    except:
+        return False
     return True
 
 
