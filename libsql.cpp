@@ -196,7 +196,7 @@ bool Libsql::open(String path) {
 	if (!path.strip_edges().length()) {
 		return false;
 	}
-	int result = libsql_open(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr, nullptr);
+	int result = sqlite3_open(path.utf8().get_data(), &db);
 	if (result != SQLITE_OK) {
 		print_error("Cannot open the database.");
 		sqlite3_close_v2(db);
@@ -207,7 +207,7 @@ bool Libsql::open(String path) {
 }
 
 void Libsql::close() {
-	// Finalize all queries before close the DB.
+	// Finalize all queries before closing the DB.
 	// Reverse order because I need to remove the not available queries.
 	for (uint32_t i = queries.size(); i > 0; i -= 1) {
 		LibsqlQuery *query =
