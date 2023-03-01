@@ -386,3 +386,5 @@ thirdparty/sqlite3/sqlite3.exe
 demo/mvsqlite
 
 demo/mvsqlite-journal
+
+thirdparty/mvsqlite/mvsqlite-sqlite3/sqlite3.exe
