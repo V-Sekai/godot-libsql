@@ -207,6 +207,7 @@ bool Libsql::open(String path) {
 		db = nullptr;
 		return false;
 	}
+	// TODO: fire 2023-02-28 restore wasm.
 	return true;
 }
 
@@ -221,6 +222,7 @@ bool Libsql::open_cluster(String path) {
     db = nullptr;
     return false;
   }
+  // TODO: fire 2023-02-28 restore wasm.
   return true;
 }
 
