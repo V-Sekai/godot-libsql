@@ -5,64 +5,35 @@ var truncate_table : LibsqlQuery
 
 func _ready():
 	var db : Libsql = Libsql.new();
-	if (!db.open("libsql")):
+	if (!db.open_cluster("mvsqlite")):
 		print("Failed opening database.");
 		return;
-	# https://github.com/eliovir/rust-examples/blob/master/fibonacci.rs
-	var query = """
-CREATE FUNCTION fibonacci LANGUAGE wasm AS '(module
-  (type (;0;) (func (param i64) (result i64)))
-  (func (;0;) (type 0) (param i64) (result i64)
-	(local i32 i64 i64)
-	block  ;; label = @1
-	  block  ;; label = @2
-		block  ;; label = @3
-		  local.get 0
-		  i32.wrap_i64
-		  local.tee 1
-		  i32.const 0
-		  i32.lt_s
-		  br_if 0 (;@3;)
-		  i64.const 1
-		  local.set 2
-		  local.get 1
-		  br_table 0 (;@3;) 2 (;@1;) 1 (;@2;)
-		end
-		unreachable
-	  end
-	  local.get 1
-	  i32.const -1
-	  i32.add
-	  local.set 1
-	  i64.const 1
-	  local.set 0
-	  loop  ;; label = @2
-		local.get 0
-		local.get 3
-		i64.add
-		local.set 2
-		local.get 0
-		local.set 3
-		local.get 2
-		local.set 0
-		local.get 1
-		i32.const -1
-		i32.add
-		local.tee 1
-		br_if 0 (;@2;)
-	  end
-	end
-	local.get 2)
-  (memory (;0;) 16)
-  (global (;0;) i32 (i32.const 1048576))
-  (global (;1;) i32 (i32.const 1048576))
-  (export "memory" (memory 0))
-  (export "fibonacci" (func 0))
-  (export "__data_end" (global 0))
-  (export "__heap_base" (global 1)))
-'
-	"""
-	var result : LibsqlQuery = db.create_query(query)
-	result.execute()
-	result = db.create_query("SELECT fibonacci(11)")
-	print(result.execute())
+	var create_entity_table : String = """
+CREATE TABLE IF NOT EXISTS entity (
+	id TEXT PRIMARY KEY NOT NULL CHECK(LENGTH(id) = 36),
+	user_data blob NOT NULL CHECK( LENGTH(user_data) = 16) DEFAULT (zeroblob(16)),
+	reserved blob NOT NULL CHECK( LENGTH(reserved) = 48)  DEFAULT (zeroblob(48)),
+	shard	INTEGER NOT NULL,
+	code	INTEGER NOT NULL,
+	flags	INTEGER	NOT NULL,
+	past_pending	BLOB,
+	past_posted BLOB,
+	current_pending BLOB,
+	current_posted	BLOB,
+	timestamp INTEGER NOT NULL
+) WITHOUT ROWID, STRICT;
+"""
+	create_table = db.create_query(create_entity_table)
+	print(create_table.execute())
+	print(db.get_last_error_message())
+	var truncate_entities : String = """DELETE FROM entity;"""
+	truncate_table = db.create_query(truncate_entities)
+	print(truncate_table.execute())
+	print(db.get_last_error_message())
+	for i in range(100):
+		var node_3d : Node3D = Node3D.new()
+		var script = load("res://sqlite_write/sqlite_write_scene.gd")
+		node_3d.set_script(script)
+		add_child(node_3d, true)
+		node_3d.owner = self
+
