@@ -14,38 +14,12 @@ env.Append(CPPDEFINES=["SQLITE_ENABLE_JSON1"])
 env.Append(CPPDEFINES=["SQLITE_OMIT_DEPRECATED"])
 env.Append(CPPDEFINES=["LIBSQL_ENABLE_WASM_RUNTIME"])
 
-os.chdir("thirdparty/mvsqlite")
-import platform as python_platform
-
-from pathlib import Path
-
-import sys
-
-if env["platform"] == "windows" and not env.msvc:
-    # Bad because it has my user directory.
-    env.Append(LIBPATH=["C:/Users/ernes/scoop/apps/openssl-mingw/current/lib64"])
-    env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-pc-windows-gnu/release/"])
-    env.Append(LIBS=["mvsqlite"])
-    if python_platform.system() == "Linux":
-        env.Append(LIBS=["compiler_rt"])
-    env.Append(LIBS=["ws2_32", "bcrypt", "userenv", "ntdll", "crypto"])    
-    subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release", "--package", "mvsqlite"])
-elif env["platform"] == "linuxbsd":
-    env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-unknown-linux-gnu/release"])
-    subprocess.check_call(["cargo", "build", "--target", "x86_64-unknown-linux-gnu", "--release", "--package", "mvsqlite"])
-    env.Append(LIBS=["mvsqlite", "pthread", "m", "dl"])
-elif env["platform"] == "web":
-    env.Append(LIBPATH=[src_folder_path + "/thirdparty/mvsqlite/target/x86_64-unknown-linux-gnu/release"])
-    subprocess.check_call(["cargo", "build", "--target", "wasm32-unknown-emscripten", "--release", "--package", "mvsqlite"])
-    env.Append(LIBS=["mvsqlite", "pthread", "m", "dl"])
-
 thirdparty_misc_dir = "thirdparty/libsql/"
 thirdparty_misc_sources = [
     "sqlite3.c",
-    "shim.c",
 ]
 thirdparty_misc_sources = [thirdparty_misc_dir + file for file in thirdparty_misc_sources]
-os.chdir(old_cwd)
+
 os.chdir("thirdparty/libsql/src/rust/wasmtime-bindings/")
 import platform as python_platform
 

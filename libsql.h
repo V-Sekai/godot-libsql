@@ -9,18 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern "C" {
-  void init_mvsqlite(void);
-  void init_mvsqlite_connection(sqlite3 *db);
-  void mvsqlite_autocommit_backoff(sqlite3 *db);
-  int sqlite3_open_v2_cluster(
-    const char *filename,   /* Database filename (UTF-8) */
-    sqlite3 **ppDb,            /* OUT: SQLite db handle */
-    int flags,              /* Flags */
-    const char *zVfs        /* Name of VFS module to use */
-  );
-}
-
 class Libsql;
 
 class LibsqlQuery : public RefCounted {
