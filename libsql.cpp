@@ -6,6 +6,9 @@
 
 #include "thirdparty/libsql/sqlite3.h"
 
+SQLITE_API void libsql_run_wasm(struct libsql_wasm_udf_api *api, sqlite3_context *context,
+		libsql_wasm_engine_t *engine, libsql_wasm_module_t *module, const char *func_name, int argc, sqlite3_value **argv);
+
 Array libsql_fast_parse_row(sqlite3_stmt *stmt) {
 	Array result;
 
@@ -196,14 +199,8 @@ bool Libsql::open(String path) {
 	if (!path.strip_edges().length()) {
 		return false;
 	}
-	init_mvsqlite();
+    init_mvsqlite();
 	int result = libsql_open(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr, nullptr);
-	if (result != SQLITE_OK) {
-		print_error("Cannot open the database.");
-		sqlite3_close_v2(db);
-		db = nullptr;
-		return false;
-	}
 	if (result != SQLITE_OK) {
 		print_error("Cannot open the database.");
 		sqlite3_close_v2(db);
@@ -214,23 +211,17 @@ bool Libsql::open(String path) {
 }
 
 bool Libsql::open_cluster(String path) {
-	if (!path.strip_edges().length()) {
-		return false;
-	}
-	int result = sqlite3_open_v2_cluster(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-	if (result != SQLITE_OK) {
-		print_error("Cannot open the database.");
-		sqlite3_close_v2(db);
-		db = nullptr;
-		return false;
-	}
-	if (result != SQLITE_OK) {
-		print_error("Cannot open the database.");
-		sqlite3_close_v2(db);
-		db = nullptr;
-		return false;
-	}
-	return true;
+  if (!path.strip_edges().length()) {
+    return false;
+  }
+  int result = sqlite3_open_v2_cluster(path.utf8().get_data(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+  if (result != SQLITE_OK) {
+    print_error("Cannot open the database.");
+    sqlite3_close_v2(db);
+    db = nullptr;
+    return false;
+  }
+  return true;
 }
 
 void Libsql::close() {
@@ -366,7 +357,7 @@ Libsql::~Libsql() {
 void Libsql::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_last_error_message"), &Libsql::get_last_error_message);
 	ClassDB::bind_method(D_METHOD("open", "path"), &Libsql::open);
-	ClassDB::bind_method(D_METHOD("open_cluster", "path"), &Libsql::open_cluster);
+ 	ClassDB::bind_method(D_METHOD("open_cluster", "path"), &Libsql::open_cluster);
 	ClassDB::bind_method(D_METHOD("close"), &Libsql::close);
 	ClassDB::bind_method(D_METHOD("create_query", "statement"),
 			&Libsql::create_query);

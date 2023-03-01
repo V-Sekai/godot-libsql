@@ -52,6 +52,28 @@ thirdparty_misc_sources = [
 ]
 thirdparty_misc_sources = [thirdparty_misc_dir + file for file in thirdparty_misc_sources]
 os.chdir(old_cwd)
+os.chdir("thirdparty/libsql/src/rust/wasmtime-bindings/")
+import platform as python_platform
+
+from pathlib import Path
+
+if env["platform"] == "windows" and not env.msvc:
+    print(src_folder_path)
+    env.Append(LIBPATH=[src_folder_path + "/thirdparty/libsql/src/rust/wasmtime-bindings/target/x86_64-pc-windows-gnu/release"])
+    subprocess.check_call(["cargo", "build", "--target", "x86_64-pc-windows-gnu", "--release"])
+    env.Append(LIBS=["libwblibsql.a", "userenv"])
+elif env["platform"] == "linuxbsd":
+    env.Append(LIBPATH=[src_folder_path + "/thirdparty/libsql/src/rust/wasmtime-bindings/target/x86_64-unknown-linux-gnu/release"])
+    subprocess.check_call(["cargo", "build", "--target", "x86_64-unknown-linux-gnu", "--release"])
+    env.Append(LIBS=["libwblibsql.a", "pthread", "m", "dl"])
+elif env["platform"] == "macos":
+    env.Append(LIBPATH=[src_folder_path + "/thirdparty/libsql/src/rust/wasmtime-bindings/target/x86_64-apple-darwin/release"])
+    subprocess.check_call(["cargo", "build", "--target", "x86_64-apple-darwin", "--release"])
+    env.Append(LIBS=["libwblibsql.a", "pthread", "m", "dl"])
+elif env["platform"] == "web":
+    env.Append(LIBPATH=[src_folder_path + "/thirdparty/libsql/src/rust/wasmtime-bindings/target/x86_64-unknown-linux-gnu/release"])
+    subprocess.check_call(["cargo", "build", "--target", "wasm32-unknown-emscripten", "--release"])
+    env.Append(LIBS=["libwblibsql.a","pthread", "m", "dl"])
 
 env.Append(CPPPATH=["thirdparty/libsql"])
 env.Append(CPPPATH=["thirdparty"])
