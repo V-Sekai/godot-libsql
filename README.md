@@ -1,6 +1,6 @@
 # godot-libsql
 
-libsql wrapper for Godot Engine with wasm text scripts.
+ A custom Godot Engine module to use the sqlite relational database. Has support for wasm user defined functions.
 
 ## Dependencies
 
