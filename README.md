@@ -1,24 +1,32 @@
 # godot-libsql
 
- A custom Godot Engine module to use the sqlite relational database. Has support for wasm user defined functions.
+A custom Godot Engine module to use the SQLite relational database.
 
-## Dependencies
+## Table of Contents
 
-- rust
-- https://docs.godotengine.org/en/latest/development/compiling/index.html
+- [How to Compile](#how-to-compile)
+- [Example Usage](#example-usage)
+- [Creating WASM Programs](#creating-wasm-programs)
+- [Installation for Windows](#installation-for-windows)
+- [Refreshing sqlite3.c](#refreshing-sqlite3c)
+- [Attribution](#attribution)
 
+## How to Compile
 
-## Example usage
+- [Godot Engine Compiling Documentation](https://docs.godotengine.org/en/latest/development/compiling/index.html)
+- OPTIONAL: Rust for cluster database support
+
+## Example Usage
 
 - [SQL Queries](https://github.com/godot-extended-libraries/godot-sqlite/blob/master/demo/SQLite/sql_queries.gd)
 - [Game Highscore](https://github.com/godot-extended-libraries/godot-sqlite/blob/master/demo/SQLite/game_highscore.gd)
 - [Item Libraries](https://github.com/godot-extended-libraries/godot-sqlite/blob/master/demo/SQLite/item_database.gd)
 
-## Creating wasm programs
+## Creating WASM Programs
 
-https://bindgen.libsql.org/
+[Bindgen LibSQL](https://bindgen.libsql.org/)
 
-## Installation for Windows.
+## Installation for Windows
 
 ```bat
 cmd
@@ -40,12 +48,6 @@ msys2
 pacman -S make clang diff mingw-w64-x86_64-rust
 sh configure --enable-all --enable-wasm-runtime
 make sqlite3.c
-```
-
-## Debugging library loading
-
-```powershell
-scoop install Dependencies
 ```
 
 ## Attribution
